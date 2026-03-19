@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oopsie Poopsie 💩 — Sign In</title>
+  <link rel="icon" href="/asset/logo1544.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="static/css/auth.css">
+</head>
+
+<body>
+
+  <!-- WELCOME -->
+  <div class="screen active" id="welcome">
+    <div class="auth-layout">
+      <div class="auth-panel-left">
+        <div class="brand-poop">💩</div>
+        <div class="brand-logo">OOPSIE<br>POOPSIE</div>
+        <div class="brand-tagline">Track your poops. Share with friends. The app nobody asked for.</div>
+      </div>
+      <div class="auth-panel-right">
+        <div class="auth-box">
+          <div>
+            <h1>LETS POOP HEALTHY BITCHES</h1>
+            <p style="margin-top:6px;">The most important tracking!</p>
+          </div>
+          <div class="divider"></div>
+          <button class="btn-primary" onclick="show('signup')">CREATE AN ACCOUNT</button>
+          <button class="btn-primary" style="background:white;color:var(--red);border:1.5px solid var(--border);"
+            onclick="show('login')">LOG IN</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="screen" id="login">
+    <div class="auth-layout">
+      <div class="auth-panel-left">
+        <div class="brand-poop">💩</div>
+        <div class="brand-logo">OOPSIE<br>POOPSIE</div>
+        <div class="brand-tagline">Your poop data is waiting for you. Log back in.</div>
+      </div>
+      <div class="auth-panel-right">
+        <div class="auth-box">
+          <div>
+            <h1>Log In</h1>
+            <p style="margin-top:6px;">Good to see you again 💩</p>
+          </div>
+          <div class="field-group"><label>Email</label><input type="email" placeholder="you@example.com"
+              id="login-email" autocomplete="email"></div>
+          <div class="field-group"><label>Password</label><input type="password" placeholder="••••••••" id="login-pw"
+              autocomplete="current-password"></div>
+          <button class="btn-primary" id="login-btn" onclick="doLogin()">LOG IN</button>
+          <div class="auth-links">
+            <button class="link-btn" onclick="show('forgot')">Forgot password?</button>
+            <button class="link-btn" onclick="show('signup')">Create an account →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGNUP -->
+  <div class="screen" id="signup">
+    <div class="auth-layout">
+      <div class="auth-panel-left">
+        <div class="brand-poop">💩</div>
+        <div class="brand-logo">OOPSIE<br>POOPSIE</div>
+        <div class="brand-tagline">Join thousands tracking what really matters.</div>
+      </div>
+      <div class="auth-panel-right">
+        <div class="auth-box">
+          <div>
+            <h1>Create Account</h1>
+            <p style="margin-top:6px;">Start your poop journey today 🚽</p>
+          </div>
+          <div class="field-group"><label>Full Name</label><input type="text" placeholder="Your name" id="signup-name"
+              autocomplete="name"></div>
+          <div class="field-group"><label>Username</label><input type="text" placeholder="e.g. poopmaster99"
+              id="signup-username" autocomplete="username"></div>
+          <div class="field-group"><label>Email</label><input type="email" placeholder="you@example.com"
+              id="signup-email" autocomplete="email"></div>
+          <div class="field-group"><label>Password</label><input type="password" placeholder="Choose a strong password"
+              id="signup-pw" autocomplete="new-password"></div>
+          <button class="btn-primary" id="signup-btn" onclick="doSignup()">CREATE ACCOUNT</button>
+          <div class="auth-links">
+            <button class="link-btn" onclick="show('login')">← Already have an account?</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORGOT -->
+  <div class="screen" id="forgot">
+    <div class="auth-layout">
+      <div class="auth-panel-left">
+        <div class="brand-poop">💩</div>
+        <div class="brand-logo">OOPSIE<br>POOPSIE</div>
+        <div class="brand-tagline">Don't worry, we'll get you back in.</div>
+      </div>
+      <div class="auth-panel-right">
+        <div class="auth-box">
+          <div>
+            <h1>Reset Password</h1>
+            <p style="margin-top:6px;">Enter your email and we'll send you a reset link.</p>
+          </div>
+          <div class="field-group"><label>Email</label><input type="email" placeholder="you@example.com"
+              id="forgot-email" autocomplete="email"></div>
+          <div class="success-msg" id="forgot-success">✅ Reset link sent! Check your inbox.</div>
+          <button class="btn-primary" onclick="doForgot()">SEND RESET LINK</button>
+          <div class="auth-links">
+            <button class="link-btn" onclick="show('login')">← Back to login</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="static/js/auth.js"></script>
+</body>
+
+</html>

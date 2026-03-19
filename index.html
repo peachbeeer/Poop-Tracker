@@ -1,820 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oopsie Poopsie 💩</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
-  --red: #c0394b; --red-dark: #9a2d3d; --red-light: #f7dcdc;
-  --bg: #fdf0f0; --white: #fff; --text: #3a1a1a; --muted: #8a5555;
-  --blue: #4a6fa5; --blue-light: #e8f0fb; --blue-dark: #2d4a75;
-  --green: #4a8a6a; --border: #f0d0d0; --sidebar-w: 260px; --topbar-h: 64px;
-}
-body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-.screen { display: none; } .screen.active { display: block; }
-.auth-layout { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
-@media (max-width: 768px) { .auth-layout { grid-template-columns: 1fr; } .auth-panel-left { display: none; } }
-.auth-panel-left { background: var(--red); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 60px; position: relative; overflow: hidden; }
-.auth-panel-left::before { content: ''; position: absolute; width: 500px; height: 500px; background: rgba(255,255,255,0.05); border-radius: 50%; top: -200px; right: -200px; }
-.auth-panel-left::after { content: ''; position: absolute; width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; bottom: -100px; left: -100px; }
-.brand-logo { font-family: 'Fredoka One', cursive; font-size: 56px; color: white; text-align: center; line-height: 1.05; position: relative; z-index: 1; }
-.brand-poop { font-size: 100px; position: relative; z-index: 1; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.2)); }
-.brand-tagline { color: rgba(255,255,255,0.8); font-size: 16px; font-weight: 600; text-align: center; position: relative; z-index: 1; max-width: 280px; line-height: 1.5; }
-.auth-panel-right { background: var(--white); display: flex; align-items: center; justify-content: center; padding: 60px 40px; }
-.auth-box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 20px; }
-.auth-box h1 { font-family: 'Fredoka One', cursive; font-size: 32px; color: var(--red); }
-.auth-box p { font-size: 14px; color: var(--muted); }
-.field-group { display: flex; flex-direction: column; gap: 6px; }
-.field-group label { font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: 0.5px; text-transform: uppercase; }
-.field-group input { background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 16px; font-size: 15px; font-family: 'Nunito', sans-serif; color: var(--text); outline: none; transition: border 0.2s, background 0.2s; }
-.field-group input:focus { border-color: var(--red); background: white; }
-.field-group input::placeholder { color: #c0a0a0; }
-.btn-primary { background: var(--red); color: white; border: none; padding: 14px 24px; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; letter-spacing: 1px; cursor: pointer; width: 100%; transition: all 0.2s; text-transform: uppercase; }
-.btn-primary:hover { background: var(--red-dark); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(192,57,75,0.3); }
-.btn-primary:active { transform: translateY(0); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
-.auth-links { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-.link-btn { background: none; border: none; color: var(--red); font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 0; font-family: 'Nunito', sans-serif; }
-.link-btn:hover { text-decoration: underline; }
-.divider { height: 1px; background: var(--border); }
-.success-msg { background: #d4edda; border-radius: 10px; padding: 12px 16px; color: #2a5c35; font-size: 14px; font-weight: 600; display: none; }
-#app-layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; grid-template-rows: var(--topbar-h) 1fr; min-height: 100vh; }
-.topbar { grid-column: 1/-1; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 20px; position: sticky; top: 0; z-index: 50; }
-.topbar-brand { font-family: 'Fredoka One', cursive; font-size: 24px; color: var(--red); display: flex; align-items: center; gap: 8px; width: calc(var(--sidebar-w) - 24px); flex-shrink: 0; }
-.topbar-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
-.tz-badge { background: var(--red-light); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 700; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-.topbar-user { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 6px 12px; border-radius: 10px; transition: background 0.15s; }
-.topbar-user:hover { background: var(--bg); }
-.topbar-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--red); color: white; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka One', cursive; font-size: 16px; }
-.topbar-username { font-size: 14px; font-weight: 700; color: var(--text); }
-.sidebar { background: white; border-right: 1px solid var(--border); padding: 24px 16px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: var(--topbar-h); height: calc(100vh - var(--topbar-h)); overflow-y: auto; transition: transform 0.25s ease, width 0.25s ease; }
-.sidebar.hidden { transform: translateX(-100%); width: 0; padding: 0; border: none; overflow: hidden; }
-#app-layout.sidebar-hidden { grid-template-columns: 0 1fr; }
-.toggle-sidebar-btn { background: var(--red-light); border: none; color: var(--red); font-size: 18px; cursor: pointer; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
-.toggle-sidebar-btn:hover { background: var(--red); color: white; }
-.nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 700; color: var(--muted); border: none; background: none; font-family: 'Nunito', sans-serif; width: 100%; text-align: left; transition: all 0.15s; }
-.nav-item:hover { background: var(--bg); color: var(--text); }
-.nav-item.active { background: var(--red-light); color: var(--red); }
-.nav-icon { font-size: 20px; width: 24px; text-align: center; flex-shrink: 0; }
-.nav-spacer { flex: 1; }
-.nav-logout { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: #c0a0a0; border: none; background: none; font-family: 'Nunito', sans-serif; width: 100%; text-align: left; transition: all 0.15s; }
-.nav-logout:hover { color: var(--red); background: var(--red-light); }
-.main-content { padding: 28px; overflow-y: auto; }
-.page { display: none; } .page.active { display: block; }
-.page-header { margin-bottom: 24px; }
-.page-title { font-family: 'Fredoka One', cursive; font-size: 28px; color: var(--text); }
-.page-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-.dashboard-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
-@media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-.stat-card { background: var(--blue); border-radius: 16px; padding: 20px 24px; color: white; display: flex; flex-direction: column; gap: 6px; }
-.stat-card.green { background: var(--green); }
-.stat-card.streak { background: linear-gradient(135deg, #c0394b, #e86080); }
-.stat-label { font-size: 12px; font-weight: 800; opacity: 0.8; letter-spacing: 1px; text-transform: uppercase; }
-.stat-num { font-family: 'Fredoka One', cursive; font-size: 48px; line-height: 1; }
-.stat-sub { font-size: 13px; opacity: 0.7; }
-.card { background: white; border-radius: 16px; border: 1px solid var(--border); padding: 24px; margin-bottom: 20px; }
-.card:last-child { margin-bottom: 0; }
-.card-title { font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
-.counter-widget { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.counter-num { font-family: 'Fredoka One', cursive; font-size: 72px; color: var(--red); line-height: 1; min-width: 80px; text-align: center; }
-.counter-btns { display: flex; gap: 12px; }
-.counter-btn { width: 56px; height: 56px; border-radius: 50%; border: none; font-size: 28px; font-weight: 900; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; font-family: 'Nunito', sans-serif; }
-.counter-btn.plus { background: var(--red); color: white; }
-.counter-btn.minus { background: var(--red-light); color: var(--red); }
-.counter-btn:hover { transform: scale(1.1); }
-.counter-btn:active { transform: scale(0.95); }
-.bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
-.bar-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
-.bar { border-radius: 6px 6px 0 0; width: 100%; transition: height 0.4s cubic-bezier(.34,1.56,.64,1); min-height: 4px; }
-.bar-day { font-size: 11px; font-weight: 800; color: var(--muted); }
-.friend-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--bg); }
-.friend-row:last-child { border-bottom: none; }
-.avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
-.friend-info { flex: 1; }
-.friend-name { font-size: 15px; font-weight: 700; color: var(--text); }
-.friend-sub { font-size: 12px; color: var(--muted); }
-.friend-stats { display: flex; gap: 8px; align-items: center; }
-.count-pill { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: var(--blue-light); color: var(--blue-dark); white-space: nowrap; }
-.count-pill.green { background: #e8f5e9; color: #2e7d32; }
-.count-pill.pink { background: var(--red-light); color: var(--red-dark); }
-.search-row { display: flex; gap: 12px; margin-bottom: 20px; }
-.search-input { flex: 1; background: white; border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 16px; font-size: 15px; font-family: 'Nunito', sans-serif; outline: none; transition: border 0.2s; max-width: 400px; }
-.search-input:focus { border-color: var(--red); }
-.btn-search { background: var(--red); color: white; border: none; border-radius: 10px; padding: 11px 22px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; transition: background 0.2s; }
-.btn-search:hover { background: var(--red-dark); }
-.friend-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; transition: box-shadow 0.15s; }
-.friend-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-.action-btn { background: none; border: 1.5px solid; border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.15s; white-space: nowrap; }
-.action-btn.add { border-color: var(--red); color: var(--red); }
-.action-btn.add:hover { background: var(--red); color: white; }
-.action-btn.remove { border-color: #d0a0a0; color: #b08080; }
-.action-btn.remove:hover { background: #fdf5f5; }
-.action-btn.accept { border-color: var(--green); color: var(--green); }
-.action-btn.accept:hover { background: var(--green); color: white; }
-.action-btn.decline { border-color: #d0a0a0; color: #b08080; }
-.pending-badge-label { background: #fff3cd; color: #8a6800; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
-.section-title { font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin: 0 0 12px; }
-.empty-state { text-align: center; padding: 40px; color: var(--muted); }
-.empty-state .big-emoji { font-size: 48px; display: block; margin-bottom: 12px; }
-.empty-state p { font-size: 15px; font-weight: 600; }
-.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media (max-width: 900px) { .settings-grid { grid-template-columns: 1fr; } }
-.profile-card { background: var(--red); border-radius: 16px; padding: 28px 24px; display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
-.profile-avatar-lg { width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Fredoka One', cursive; font-size: 30px; color: white; flex-shrink: 0; }
-.profile-info { color: white; }
-.profile-name { font-family: 'Fredoka One', cursive; font-size: 24px; }
-.profile-uname { font-size: 14px; opacity: 0.8; margin-top: 2px; }
-.settings-section { background: white; border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
-.settings-section-title { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; padding: 14px 20px 10px; border-bottom: 1px solid var(--bg); }
-.settings-row { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--bg); cursor: pointer; transition: background 0.15s; gap: 12px; }
-.settings-row:last-child { border-bottom: none; }
-.settings-row:hover { background: var(--bg); }
-.settings-row-icon { font-size: 18px; width: 26px; text-align: center; flex-shrink: 0; }
-.settings-row-label { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
-.settings-row-value { font-size: 13px; color: var(--muted); }
-.settings-row-arrow { color: #d0a0a0; }
-.danger-label { color: var(--red) !important; }
-.toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-.toggle-switch input { opacity: 0; width: 0; height: 0; }
-.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #d0a0a0; border-radius: 24px; transition: 0.3s; }
-.toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
-.toggle-switch input:checked + .toggle-slider { background: var(--red); }
-.toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
-.modal-overlay.open { display: flex; }
-.modal-box { background: white; border-radius: 20px; padding: 28px; width: 420px; max-width: 90vw; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
-.modal-title { font-family: 'Fredoka One', cursive; color: var(--red); font-size: 22px; }
-.modal-btns { display: flex; gap: 10px; }
-.btn-cancel { flex: 1; padding: 11px; border: 1.5px solid var(--border); border-radius: 10px; background: none; cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 700; color: var(--muted); transition: background 0.15s; }
-.btn-cancel:hover { background: var(--bg); }
-.btn-save { flex: 1; padding: 11px; background: var(--red); border: none; border-radius: 10px; color: white; cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 700; transition: background 0.15s; }
-.btn-save:hover { background: var(--red-dark); }
-.toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px); background: #2c2c2c; color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 600; font-family: 'Nunito', sans-serif; z-index: 999; transition: transform 0.3s cubic-bezier(.34,1.56,.64,1); white-space: nowrap; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-.toast.show { transform: translateX(-50%) translateY(0); }
-@keyframes pop { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-.pop-anim { animation: pop 0.25s ease; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-.page.active { animation: fadeUp 0.2s ease; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Oopsie Poopsie 💩</title>
+  <link rel="icon" href="/asset/logo1544.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/style.css">
 </head>
+
 <body>
 
-<!-- WELCOME -->
-<div class="screen active" id="welcome">
-  <div class="auth-layout">
-    <div class="auth-panel-left">
-      <div class="brand-poop">💩</div>
-      <div class="brand-logo">OOPSIE<br>POOPSIE</div>
-      <div class="brand-tagline">Track your poops. Share with friends. The app nobody asked for.</div>
-    </div>
-    <div class="auth-panel-right">
-      <div class="auth-box">
-        <div><h1>LETS POOP HEALTHY BITCHES</h1><p style="margin-top:6px;">The most important tracking!</p></div>
-        <div class="divider"></div>
-        <button class="btn-primary" onclick="show('signup')">CREATE AN ACCOUNT</button>
-        <button class="btn-primary" style="background:white;color:var(--red);border:1.5px solid var(--border);" onclick="show('login')">LOG IN</button>
-      </div>
-    </div>
-  </div>
-</div>
+  <!-- APP -->
+  <div id="app-wrap" style="display:none;">
 
-<!-- LOGIN -->
-<div class="screen" id="login">
-  <div class="auth-layout">
-    <div class="auth-panel-left">
-      <div class="brand-poop">💩</div><div class="brand-logo">OOPSIE<br>POOPSIE</div>
-      <div class="brand-tagline">Your poop data is waiting for you. Log back in.</div>
-    </div>
-    <div class="auth-panel-right">
-      <div class="auth-box">
-        <div><h1>Log In</h1><p style="margin-top:6px;">Good to see you again 💩</p></div>
-        <div class="field-group"><label>Email</label><input type="email" placeholder="you@example.com" id="login-email"></div>
-        <div class="field-group"><label>Password</label><input type="password" placeholder="••••••••" id="login-pw"></div>
-        <button class="btn-primary" id="login-btn" onclick="doLogin()">LOG IN</button>
-        <div class="auth-links">
-          <button class="link-btn" onclick="show('forgot')">Forgot password?</button>
-          <button class="link-btn" onclick="show('signup')">Create an account →</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+    <!-- Sidebar overlay (mobile tap-to-close) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
 
-<!-- SIGNUP -->
-<div class="screen" id="signup">
-  <div class="auth-layout">
-    <div class="auth-panel-left">
-      <div class="brand-poop">💩</div><div class="brand-logo">OOPSIE<br>POOPSIE</div>
-      <div class="brand-tagline">Join thousands tracking what really matters.</div>
-    </div>
-    <div class="auth-panel-right">
-      <div class="auth-box">
-        <div><h1>Create Account</h1><p style="margin-top:6px;">Start your poop journey today 🚽</p></div>
-        <div class="field-group"><label>Full Name</label><input type="text" placeholder="Your name" id="signup-name"></div>
-        <div class="field-group"><label>Username</label><input type="text" placeholder="e.g. poopmaster99" id="signup-username"></div>
-        <div class="field-group"><label>Email</label><input type="email" placeholder="you@example.com" id="signup-email"></div>
-        <div class="field-group"><label>Password</label><input type="password" placeholder="Choose a strong password" id="signup-pw"></div>
-        <button class="btn-primary" id="signup-btn" onclick="doSignup()">CREATE ACCOUNT</button>
-        <div class="auth-links"><button class="link-btn" onclick="show('login')">← Already have an account?</button></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- FORGOT -->
-<div class="screen" id="forgot">
-  <div class="auth-layout">
-    <div class="auth-panel-left">
-      <div class="brand-poop">💩</div><div class="brand-logo">OOPSIE<br>POOPSIE</div>
-      <div class="brand-tagline">Don't worry, we'll get you back in.</div>
-    </div>
-    <div class="auth-panel-right">
-      <div class="auth-box">
-        <div><h1>Reset Password</h1><p style="margin-top:6px;">Enter your email and we'll send you a reset link.</p></div>
-        <div class="field-group"><label>Email</label><input type="email" placeholder="you@example.com" id="forgot-email"></div>
-        <div class="success-msg" id="forgot-success">✅ Reset link sent! Check your inbox.</div>
-        <button class="btn-primary" onclick="doForgot()">SEND RESET LINK</button>
-        <div class="auth-links"><button class="link-btn" onclick="show('login')">← Back to login</button></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- APP -->
-<div class="screen" id="app">
-  <div id="app-layout">
-    <header class="topbar">
-      <button class="toggle-sidebar-btn" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
-      <div class="topbar-brand">💩 Oopsie Poopsie</div>
-      <div class="topbar-right">
-        <div class="tz-badge">🌍 <span id="tz-label"></span>&nbsp;<span id="clock-time" style="font-weight:900;color:var(--red);"></span></div>
-        <div class="topbar-user" onclick="navTo('settings')">
-          <div class="topbar-avatar" id="topbar-avatar">?</div>
-          <span class="topbar-username" id="topbar-username">@username</span>
-        </div>
-      </div>
-    </header>
-    <aside class="sidebar">
-      <button class="nav-item active" id="nav-home" onclick="navTo('home')"><span class="nav-icon">🏠</span> Home</button>
-      <button class="nav-item" id="nav-friends" onclick="navTo('friends')">
-        <span class="nav-icon">👥</span> Friends
-        <span id="pending-badge" style="margin-left:auto;background:var(--red);color:white;font-size:11px;padding:1px 7px;border-radius:20px;display:none;">0</span>
-      </button>
-      <button class="nav-item" id="nav-settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span> Settings</button>
-      <div class="nav-spacer"></div>
-      <button class="nav-logout" onclick="doLogout()"><span class="nav-icon">🚪</span> Log Out</button>
-    </aside>
-    <main class="main-content">
-
-      <!-- HOME -->
-      <div class="page active" id="page-home">
-        <div class="page-header">
-          <div class="page-title">Good day, <span id="greeting-name">there</span>! 💩</div>
-          <div class="page-sub">Here's your poop dashboard for today.</div>
-        </div>
-        <div class="stats-grid">
-          <div class="stat-card streak">
-            <div class="stat-label">🔥 Current Streak</div>
-            <div class="stat-num" style="font-size:36px;" id="streak-val">0 days</div>
-            <div class="stat-sub" id="streak-sub">Start pooping!</div>
+    <div id="app-layout">
+      <header class="topbar">
+        <button class="toggle-sidebar-btn" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+        <div class="topbar-brand">💩 Oopsie Poopsie</div>
+        <div class="topbar-right">
+          <div class="tz-badge">🌍 <span id="tz-label"></span>&nbsp;<span id="clock-time" style="font-weight:900;color:var(--red);"></span></div>
+          <div class="topbar-user" onclick="navTo('settings')">
+            <div class="topbar-avatar" id="topbar-avatar">?</div>
+            <span class="topbar-username" id="topbar-username">@username</span>
           </div>
-          <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-num" id="month-count">0</div><div class="stat-sub">poops logged</div></div>
-          <div class="stat-card green"><div class="stat-label">This Week</div><div class="stat-num" id="week-count">0</div><div class="stat-sub">poops this week</div></div>
         </div>
-        <div class="dashboard-grid">
-          <div>
-            <div class="card">
-              <div class="card-title">Today's Poops 💩</div>
-              <div class="counter-widget">
-                <div class="counter-num" id="today-count">0</div>
-                <div style="flex:1;text-align:center;color:var(--muted);font-size:14px;font-weight:600;" id="counter-msg">Press + to log a poop!</div>
-                <div class="counter-btns">
-                  <button class="counter-btn minus" onclick="changeCount(-1)">−</button>
-                  <button class="counter-btn plus" onclick="changeCount(1)">+</button>
+      </header>
+
+      <aside class="sidebar">
+        <button class="nav-item active" id="nav-home" onclick="navTo('home')"><span class="nav-icon">🏠</span> Home</button>
+        <button class="nav-item" id="nav-friends" onclick="navTo('friends')">
+          <span class="nav-icon">👥</span> Friends
+          <span id="pending-badge" style="margin-left:auto;background:var(--red);color:white;font-size:11px;padding:1px 7px;border-radius:20px;display:none;">0</span>
+        </button>
+        <button class="nav-item" id="nav-settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span> Settings</button>
+        <div class="nav-spacer"></div>
+        <button class="nav-logout" onclick="doLogout()"><span class="nav-icon">🚪</span> Log Out</button>
+      </aside>
+
+      <main class="main-content">
+
+        <!-- HOME -->
+        <div class="page active" id="page-home">
+          <div class="page-header">
+            <div class="page-title">Good day, <span id="greeting-name">there</span>! 💩</div>
+            <div class="page-sub">Here's your poop dashboard for today.</div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card streak">
+              <div class="stat-label">🔥 Current Streak</div>
+              <div class="stat-num" style="font-size:36px;" id="streak-val">0 days</div>
+              <div class="stat-sub" id="streak-sub">Start pooping!</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">This Month</div>
+              <div class="stat-num" id="month-count">0</div>
+              <div class="stat-sub">poops logged</div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-label">This Week</div>
+              <div class="stat-num" id="week-count">0</div>
+              <div class="stat-sub">poops this week</div>
+            </div>
+          </div>
+          <div class="dashboard-grid">
+            <div>
+              <div class="card">
+                <div class="card-title">Today's Poops 💩</div>
+                <div class="counter-widget">
+                  <div class="counter-num" id="today-count">0</div>
+                  <div style="flex:1;text-align:center;color:var(--muted);font-size:14px;font-weight:600;" id="counter-msg">Press + to log a poop!</div>
+                  <div class="counter-btns">
+                    <button class="counter-btn minus" onclick="changeCount(-1)">−</button>
+                    <button class="counter-btn plus" onclick="changeCount(1)">+</button>
+                  </div>
                 </div>
               </div>
+              <div class="card">
+                <div class="card-title">Weekly Overview</div>
+                <div class="bar-chart" id="bar-chart"></div>
+              </div>
             </div>
-            <div class="card"><div class="card-title">Weekly Overview</div><div class="bar-chart" id="bar-chart"></div></div>
+            <div>
+              <div class="card" style="height:100%;">
+                <div class="card-title">Friends' Poops Today</div>
+                <div id="friends-home-list"></div>
+              </div>
+            </div>
           </div>
-          <div><div class="card" style="height:100%;"><div class="card-title">Friends' Poops Today</div><div id="friends-home-list"></div></div></div>
         </div>
-      </div>
 
-      <!-- FRIENDS -->
-      <div class="page" id="page-friends">
-        <div class="page-header"><div class="page-title">Friends 👥</div><div class="page-sub">Find friends and see how they're doing.</div></div>
-        <div class="search-row">
-          <input class="search-input" type="text" placeholder="Search by exact username (lowercase)..." id="friend-search">
-          <button class="btn-search" onclick="searchFriend()">Search</button>
-        </div>
-        <div id="search-results" style="margin-bottom:20px;"></div>
-        <div id="pending-section" style="margin-bottom:24px;display:none;">
-          <p class="section-title">🔔 Pending Requests</p>
-          <div id="pending-list"></div>
-        </div>
-        <div><p class="section-title">My Friends</p><div id="friends-list-main"></div></div>
-      </div>
-
-      <!-- SETTINGS -->
-      <div class="page" id="page-settings">
-        <div class="page-header"><div class="page-title">Settings ⚙️</div><div class="page-sub">Manage your account and preferences.</div></div>
-        <div class="profile-card">
-          <div class="profile-avatar-lg" id="settings-avatar">?</div>
-          <div class="profile-info"><div class="profile-name" id="settings-name">Your Name</div><div class="profile-uname" id="settings-username">@username</div></div>
-        </div>
-        <div class="settings-grid">
-          <div>
-            <div class="settings-section">
-              <div class="settings-section-title">Account</div>
-              <div class="settings-row" onclick="editField('Full Name')"><span class="settings-row-icon">👤</span><span class="settings-row-label">Full Name</span><span class="settings-row-value" id="s-name-val">—</span><span class="settings-row-arrow">›</span></div>
-              <div class="settings-row" onclick="editField('Username')"><span class="settings-row-icon">🏷️</span><span class="settings-row-label">Username</span><span class="settings-row-value" id="s-username-val">—</span><span class="settings-row-arrow">›</span></div>
-              <div class="settings-row" style="cursor:default;"><span class="settings-row-icon">📧</span><span class="settings-row-label">Email</span><span class="settings-row-value" id="s-email-val">—</span></div>
-              <div class="settings-row" onclick="editField('Password',true)"><span class="settings-row-icon">🔒</span><span class="settings-row-label">Change Password</span><span class="settings-row-arrow">›</span></div>
-            </div>
+        <!-- FRIENDS -->
+        <div class="page" id="page-friends">
+          <div class="page-header">
+            <div class="page-title">Friends 👥</div>
+            <div class="page-sub">Find friends and see how they're doing.</div>
+          </div>
+          <div class="search-row">
+            <input class="search-input" type="text" placeholder="Search by exact username (lowercase)..." id="friend-search">
+            <button class="btn-search" onclick="searchFriend()">Search</button>
+          </div>
+          <div id="search-results" style="margin-bottom:20px;"></div>
+          <div id="pending-section" style="margin-bottom:24px;display:none;">
+            <p class="section-title">🔔 Pending Requests</p>
+            <div id="pending-list"></div>
           </div>
           <div>
-            <div class="settings-section">
-              <div class="settings-section-title">Preferences</div>
-              <div class="settings-row" style="cursor:default;"><span class="settings-row-icon">🌍</span><span class="settings-row-label">Timezone</span><span class="settings-row-value" id="s-tz-val">Auto-detected</span></div>
+            <p class="section-title">My Friends</p>
+            <div id="friends-list-main"></div>
+          </div>
+        </div>
 
+        <!-- SETTINGS -->
+        <div class="page" id="page-settings">
+          <div class="page-header">
+            <div class="page-title">Settings ⚙️</div>
+            <div class="page-sub">Manage your account and preferences.</div>
+          </div>
+          <div class="profile-card">
+            <div class="profile-avatar-lg" id="settings-avatar">?</div>
+            <div class="profile-info">
+              <div class="profile-name" id="settings-name">Your Name</div>
+              <div class="profile-uname" id="settings-username">@username</div>
             </div>
-            <div class="settings-section" style="margin-top:16px;">
-              <div class="settings-section-title">Danger Zone</div>
-              <div class="settings-row" onclick="confirmDelete()"><span class="settings-row-icon">🗑️</span><span class="settings-row-label danger-label">Delete Account</span><span class="settings-row-arrow danger-label">›</span></div>
-              <div class="settings-row" onclick="doLogout()"><span class="settings-row-icon">🚪</span><span class="settings-row-label danger-label">Log Out</span><span class="settings-row-arrow danger-label">›</span></div>
+          </div>
+          <div class="settings-grid">
+            <div>
+              <div class="settings-section">
+                <div class="settings-section-title">Account</div>
+                <div class="settings-row" onclick="editField('Full Name')"><span class="settings-row-icon">👤</span><span class="settings-row-label">Full Name</span><span class="settings-row-value" id="s-name-val">—</span><span class="settings-row-arrow">›</span></div>
+                <div class="settings-row" onclick="editField('Username')"><span class="settings-row-icon">🏷️</span><span class="settings-row-label">Username</span><span class="settings-row-value" id="s-username-val">—</span><span class="settings-row-arrow">›</span></div>
+                <div class="settings-row" style="cursor:default;"><span class="settings-row-icon">📧</span><span class="settings-row-label">Email</span><span class="settings-row-value" id="s-email-val">—</span></div>
+                <div class="settings-row" onclick="editField('Password',true)"><span class="settings-row-icon">🔒</span><span class="settings-row-label">Change Password</span><span class="settings-row-arrow">›</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="settings-section">
+                <div class="settings-section-title">Preferences</div>
+                <div class="settings-row" style="cursor:default;"><span class="settings-row-icon">🌍</span><span class="settings-row-label">Timezone</span><span class="settings-row-value" id="s-tz-val">Auto-detected</span></div>
+              </div>
+              <div class="settings-section" style="margin-top:16px;">
+                <div class="settings-section-title">Danger Zone</div>
+                <div class="settings-row" onclick="confirmDelete()"><span class="settings-row-icon">🗑️</span><span class="settings-row-label danger-label">Delete Account</span><span class="settings-row-arrow danger-label">›</span></div>
+                <div class="settings-row" onclick="doLogout()"><span class="settings-row-icon">🚪</span><span class="settings-row-label danger-label">Log Out</span><span class="settings-row-arrow danger-label">›</span></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
-  </div>
-</div>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="edit-modal">
-  <div class="modal-box">
-    <div class="modal-title" id="modal-title">Edit Field</div>
-    <div class="field-group"><label id="modal-label">Value</label><input id="modal-input" type="text" placeholder=""></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="saveModal()">Save</button>
+      </main>
     </div>
   </div>
-</div>
-<div class="toast" id="toast"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, addDoc, onSnapshot, deleteDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+  <!-- BOTTOM NAV (mobile) -->
+  <nav class="bottom-nav" id="bottom-nav" style="display:none;">
+    <div class="bottom-nav-inner">
+      <button class="bottom-nav-btn active" id="bnav-home" onclick="navTo('home')">
+        <span class="bnav-icon">🏠</span>
+        Home
+      </button>
+      <button class="bottom-nav-btn" id="bnav-friends" onclick="navTo('friends')">
+        <span class="bnav-icon">👥</span>
+        Friends
+        <span class="bottom-nav-badge" id="bnav-badge">0</span>
+      </button>
+      <button class="bottom-nav-btn" id="bnav-settings" onclick="navTo('settings')">
+        <span class="bnav-icon">⚙️</span>
+        Settings
+      </button>
+      <button class="bottom-nav-btn" onclick="doLogout()">
+        <span class="bnav-icon">🚪</span>
+        Logout
+      </button>
+    </div>
+  </nav>
 
-const app  = initializeApp({ apiKey:"AIzaSyCGVDkVu41U1AFqOeZFgFSyM1kitTGnLLs", authDomain:"oopsie-poopsie-c32d7.firebaseapp.com", projectId:"oopsie-poopsie-c32d7", storageBucket:"oopsie-poopsie-c32d7.firebasestorage.app", messagingSenderId:"1074032955615", appId:"1:1074032955615:web:ed6e9c837aca3d5b0f596a" });
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-// ── STATE ──────────────────────────────────────────────────────────────
-const state = { user:{uid:'',name:'',username:'',email:''}, today:0, week:[0,0,0,0,0,0,0], month:0, streak:0, lastPoopDate:'', friends:[], pendingIn:[] };
-let unsubA=null, unsubB=null, unsubP=null;
-
-// ── UTILS ───────────────────────────────────────────────────────────────
-const COLORS = ['#4a6fa5','#c0394b','#4a8a6a','#7c4dff','#f57c00','#0097a7','#e91e63'];
-const colorFor = uid => COLORS[uid.charCodeAt(0)%COLORS.length];
-const avatarOf = name => (name||'?')[0].toUpperCase();
-const weekSum  = w => (Array.isArray(w)?w:[0,0,0,0,0,0,0]).reduce((a,b)=>a+b,0);
-const todayStr = () => new Date().toISOString().slice(0,10); // "2026-03-19"
-const yesterdayStr = () => { const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); };
-
-function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-window.show = show;
-
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
-
-function getTzLabel(){ const tz=Intl.DateTimeFormat().resolvedOptions().timeZone,off=new Date().getTimezoneOffset(),absH=Math.floor(Math.abs(off)/60),absM=Math.abs(off)%60,sign=off<=0?'+':'-'; return tz.split('/').pop().replace(/_/g,' ')+' '+sign+absH+':'+String(absM).padStart(2,'0'); }
-function updateClock(){ const now=new Date(),el=document.getElementById('clock-time'),tz=document.getElementById('tz-label'); if(el)el.textContent=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0'); if(tz)tz.textContent=getTzLabel(); }
-updateClock(); setInterval(updateClock,30000);
-
-// ── STREAK LOGIC ────────────────────────────────────────────────────────
-// Called on login/load — checks if today needs resetting and recalculates streak
-function processStreakOnLoad(d) {
-  const today = todayStr();
-  const yesterday = yesterdayStr();
-  const last = d.lastPoopDate || '';
-
-  let streak = d.streak || 0;
-  let todayCount = d.today || 0;
-  let month = d.month || 0;
-  let week = Array.isArray(d.week) ? d.week : [0,0,0,0,0,0,0];
-
-  // If last poop was before yesterday — streak is broken, reset to 0
-  if (last && last < yesterday) {
-    streak = 0;
-  }
-
-  // If last poop was not today — reset today's count to 0 (new day)
-  if (last !== today) {
-    todayCount = 0;
-    // Also reset today's slot in the week array
-    const todayIdx = new Date().getDay();
-    week[todayIdx] = 0;
-  }
-
-  // If it's a new week (Monday), reset the whole week array
-  const now = new Date();
-  if (now.getDay() === 1 && last && last < today) {
-    // Check if last poop was before this Monday
-    const thisMonday = new Date(); thisMonday.setDate(now.getDate() - now.getDay() + 1); thisMonday.setHours(0,0,0,0);
-    if (new Date(last) < thisMonday) {
-      week = [0,0,0,0,0,0,0];
-    }
-  }
-
-  // If it's a new month, reset month count
-  const lastMonth = last ? last.slice(0,7) : '';
-  const thisMonth = today.slice(0,7);
-  if (lastMonth && lastMonth !== thisMonth) {
-    month = 0;
-  }
-
-  return { streak, today: todayCount, week, month };
-}
-
-// Called every time user logs a poop (+)
-function recalculateStreak() {
-  const today = todayStr();
-  const last = state.lastPoopDate;
-
-  if (last === today) {
-    // Already pooped today, streak stays same
-    return state.streak;
-  } else if (last === yesterdayStr()) {
-    // Pooped yesterday too — extend streak
-    return state.streak + 1;
-  } else {
-    // Gap of more than 1 day or first poop ever
-    return 1;
-  }
-}
-
-// ── FIRESTORE HELPERS ───────────────────────────────────────────────────
-async function savePoopData() {
-  if(!state.user.uid) return;
-  await setDoc(doc(db,'users',state.user.uid), {
-    today: state.today,
-    month: state.month,
-    week:  state.week,
-    streak: state.streak,
-    lastPoopDate: state.lastPoopDate,
-  }, { merge:true });
-}
-
-async function loadUserData(uid) {
-  const snap = await getDoc(doc(db,'users',uid));
-  if(snap.exists()) {
-    const d = snap.data();
-    state.user = { uid, name:d.name||'', username:d.username||'', email:d.email||'' };
-
-    // Process resets and streak on load
-    const processed = processStreakOnLoad(d);
-    state.today       = processed.today;
-    state.month       = processed.month;
-    state.week        = processed.week;
-    state.streak      = processed.streak;
-    state.lastPoopDate = d.lastPoopDate || '';
-
-    // If today was reset, save immediately to Firestore
-    if (d.today !== processed.today || d.streak !== processed.streak) {
-      await setDoc(doc(db,'users',uid), { today:processed.today, month:processed.month, week:processed.week, streak:processed.streak }, { merge:true });
-    }
-  }
-}
-
-// ── LIVE LISTENERS ──────────────────────────────────────────────────────
-function startListeners(uid){
-  let s1=[], s2=[];
-  const merge = () => {
-    const all=[...s1,...s2];
-    const friendUids=all.map(f=>f.user1===uid?f.user2:f.user1);
-    Promise.all(friendUids.map(fuid=>getDoc(doc(db,'users',fuid)))).then(snaps=>{
-      state.friends=snaps.filter(s=>s.exists()).map(s=>({ uid:s.id,...s.data(), color:colorFor(s.id), avatar:avatarOf(s.data().name) }));
-      renderFriendsHome();
-      if(document.getElementById('page-friends').classList.contains('active')) renderFriends();
-    });
-  };
-  unsubA=onSnapshot(query(collection(db,'friendships'),where('user1','==',uid),where('status','==','accepted')),snap=>{ s1=snap.docs.map(d=>d.data()); merge(); });
-  unsubB=onSnapshot(query(collection(db,'friendships'),where('user2','==',uid),where('status','==','accepted')),snap=>{ s2=snap.docs.map(d=>d.data()); merge(); });
-  unsubP=onSnapshot(query(collection(db,'friendships'),where('user2','==',uid),where('status','==','pending')),async snap=>{
-    const reqs=snap.docs.map(d=>({id:d.id,...d.data()}));
-    const sSnaps=await Promise.all(reqs.map(r=>getDoc(doc(db,'users',r.user1))));
-    state.pendingIn=sSnaps.filter(s=>s.exists()).map((s,i)=>({ docId:reqs[i].id, uid:s.id, name:s.data().name, username:s.data().username, color:colorFor(s.id), avatar:avatarOf(s.data().name) }));
-    updatePendingBadge();
-    if(document.getElementById('page-friends').classList.contains('active')) renderFriends();
-  });
-}
-function stopListeners(){ [unsubA,unsubB,unsubP].forEach(u=>u&&u()); unsubA=unsubB=unsubP=null; }
-
-// ── AUTH ────────────────────────────────────────────────────────────────
-window.doSignup = async function(){
-  const name=document.getElementById('signup-name').value.trim();
-  const username=document.getElementById('signup-username').value.trim().toLowerCase();
-  const email=document.getElementById('signup-email').value.trim();
-  const pw=document.getElementById('signup-pw').value;
-  if(!name||!username||!email||!pw){ showToast('Please fill all fields'); return; }
-  const btn=document.getElementById('signup-btn');
-  btn.disabled=true; btn.textContent='Creating...';
-  try {
-    const taken=await getDocs(query(collection(db,'users'),where('username','==',username)));
-    if(!taken.empty){ showToast('Username already taken ❌'); return; }
-    const cred=await createUserWithEmailAndPassword(auth,email,pw);
-    await setDoc(doc(db,'users',cred.user.uid),{ name,username,email,today:0,month:0,week:[0,0,0,0,0,0,0],streak:0,lastPoopDate:'',createdAt:serverTimestamp() });
-    state.user={uid:cred.user.uid,name,username,email};
-    state.today=0; state.month=0; state.week=[0,0,0,0,0,0,0]; state.streak=0; state.lastPoopDate='';
-    startListeners(cred.user.uid);
-    show('app'); renderHome(); updateClock();
-    showToast('Account created! 🎉');
-  } catch(err){ showToast(err.message); }
-  finally{ btn.disabled=false; btn.textContent='CREATE ACCOUNT'; }
-};
-
-window.doLogin = async function(){
-  const email=document.getElementById('login-email').value.trim();
-  const pw=document.getElementById('login-pw').value;
-  if(!email||!pw){ showToast('Please fill all fields'); return; }
-  const btn=document.getElementById('login-btn');
-  btn.disabled=true; btn.textContent='Logging in...';
-  try {
-    const cred=await signInWithEmailAndPassword(auth,email,pw);
-    await loadUserData(cred.user.uid);
-    startListeners(cred.user.uid);
-    show('app'); renderHome(); updateClock();
-    showToast('Welcome back 💩');
-  } catch(err){ showToast(err.message); }
-  finally{ btn.disabled=false; btn.textContent='LOG IN'; }
-};
-
-window.doLogout = async function(){
-  stopListeners(); await signOut(auth);
-  state.today=0; state.month=0; state.week=[0,0,0,0,0,0,0]; state.streak=0; state.lastPoopDate=''; state.friends=[]; state.pendingIn=[];
-  show('welcome');
-};
-
-window.doForgot = async function(){
-  const email=document.getElementById('forgot-email').value.trim();
-  if(!email){ showToast('Enter your email'); return; }
-  try{ await sendPasswordResetEmail(auth,email); document.getElementById('forgot-success').style.display='block'; setTimeout(()=>show('login'),2500); }
-  catch(err){ showToast(err.message); }
-};
-
-window.confirmDelete = async function(){
-  if(!confirm('Are you sure? This permanently deletes your account and all poop data. 💩')) return;
-  const user=auth.currentUser;
-  if(user){ try{ await user.delete(); } catch(e){ showToast('Please log out and back in, then try again.'); return; } }
-  stopListeners(); showToast('Account deleted. Goodbye! 👋');
-  setTimeout(()=>show('welcome'),1500);
-};
-
-onAuthStateChanged(auth,async user=>{
-  if(user){ await loadUserData(user.uid); startListeners(user.uid); show('app'); renderHome(); updateClock(); }
-  else{ show('welcome'); }
-});
-
-// ── SIDEBAR TOGGLE ───────────────────────────────────────────────────────
-let sidebarOpen = true;
-window.toggleSidebar = function(){
-  sidebarOpen = !sidebarOpen;
-  const sidebar = document.querySelector('.sidebar');
-  const layout  = document.getElementById('app-layout');
-  const btn     = document.getElementById('sidebar-toggle');
-  sidebar.classList.toggle('hidden', !sidebarOpen);
-  layout.classList.toggle('sidebar-hidden', !sidebarOpen);
-  btn.textContent = sidebarOpen ? '☰' : '☰';
-};
-
-// ── NAV ─────────────────────────────────────────────────────────────────
-window.navTo = function(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  const n=document.getElementById('nav-'+page); if(n) n.classList.add('active');
-  if(page==='home') renderHome();
-  if(page==='friends') renderFriends();
-  if(page==='settings') renderSettings();
-};
-
-// ── HOME ─────────────────────────────────────────────────────────────────
-function renderStreak(){
-  const el = document.getElementById('streak-val');
-  const sub = document.getElementById('streak-sub');
-  if(!el) return;
-  el.textContent = state.streak + (state.streak === 1 ? ' day' : ' days');
-  if(state.streak === 0) sub.textContent = 'Start pooping!';
-  else if(state.streak < 3) sub.textContent = 'Good start! 💪';
-  else if(state.streak < 7) sub.textContent = 'On a roll! 🔥';
-  else sub.textContent = 'Absolute legend! 👑';
-}
-
-function renderHome(){
-  const name=state.user.name?state.user.name.split(' ')[0]:'there';
-  document.getElementById('greeting-name').textContent=name;
-  document.getElementById('topbar-avatar').textContent=name[0].toUpperCase();
-  document.getElementById('topbar-username').textContent='@'+(state.user.username||'...');
-  document.getElementById('today-count').textContent=state.today;
-  document.getElementById('week-count').textContent=weekSum(state.week);
-  document.getElementById('month-count').textContent=state.month;
-  renderStreak();
-  updateCounterMsg(); renderChart(); renderFriendsHome(); updatePendingBadge();
-}
-
-window.changeCount = async function(delta){
-  state.today=Math.max(0,state.today+delta);
-  if(delta>0){
-    state.month++;
-    // Update streak when adding a poop
-    state.streak = recalculateStreak();
-    state.lastPoopDate = todayStr();
-  } else if(delta<0 && state.month>0){
-    state.month--;
-    // If today drops to 0, streak goes back to 0
-    if(state.today === 0){
-      state.streak = 0;
-      state.lastPoopDate = '';
-    }
-  }
-  const todayIdx=new Date().getDay();
-  state.week[todayIdx]=state.today;
-  const el=document.getElementById('today-count');
-  el.textContent=state.today; el.classList.remove('pop-anim'); void el.offsetWidth; el.classList.add('pop-anim');
-  document.getElementById('week-count').textContent=weekSum(state.week);
-  document.getElementById('month-count').textContent=state.month;
-  renderStreak();
-  updateCounterMsg();
-  if(delta>0) showToast('Poop logged! 💩');
-  renderChart();
-  await savePoopData();
-};
-
-function updateCounterMsg(){
-  const msgs=['Press + to log a poop!','Nice one! 💪',"You're on a roll!",'Pooping machine! 🏆','Legend. 👑'];
-  const el=document.getElementById('counter-msg');
-  if(el) el.textContent=state.today===0?msgs[0]:msgs[Math.min(state.today,msgs.length-1)];
-}
-
-function renderChart(){
-  const days=['S','M','T','W','T','F','S'];
-  const todayIdx=new Date().getDay();
-  const data=[...state.week]; data[todayIdx]=state.today;
-  const max=Math.max(...data,1);
-  const chart=document.getElementById('bar-chart'); if(!chart) return;
-  chart.innerHTML=data.map((v,i)=>`
-    <div class="bar-col">
-      <div class="bar" style="height:${Math.round((v/max)*100)}px;background:${i===todayIdx?'#c0394b':'#4a6fa5'};"></div>
-      <div class="bar-day" style="color:${i===todayIdx?'#c0394b':'var(--muted)'};font-weight:${i===todayIdx?900:700};">${days[i]}</div>
-    </div>`).join('');
-}
-
-function renderFriendsHome(){
-  const el=document.getElementById('friends-home-list'); if(!el) return;
-  if(state.friends.length===0){ el.innerHTML=`<div class="empty-state"><span class="big-emoji">🤷</span><p>No friends yet.<br>Add some in the Friends tab!</p></div>`; return; }
-  el.innerHTML=state.friends.map(f=>`
-    <div class="friend-row">
-      <div class="avatar" style="background:${f.color}22;color:${f.color};">${f.avatar}</div>
-      <div class="friend-info"><div class="friend-name">${f.name}</div><div class="friend-sub">@${f.username}</div></div>
-      <div class="friend-stats">
-        <span class="count-pill">${f.today||0} 💩 today</span>
-        <span class="count-pill green">${weekSum(f.week)}w</span>
+  <!-- MODAL -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal-box">
+      <div class="modal-title" id="modal-title">Edit Field</div>
+      <div class="field-group"><label id="modal-label">Value</label><input id="modal-input" type="text" placeholder=""></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" onclick="saveModal()">Save</button>
       </div>
-    </div>`).join('');
-}
+    </div>
+  </div>
+  <!-- SUCCESS ALERT BANNER -->
+  <div class="success-alert" id="success-alert">
+    <span class="success-alert-icon">✓</span>
+    <span class="success-alert-msg" id="success-alert-msg">Success!</span>
+    <button class="success-alert-close" onclick="closeSuccessAlert()">✕</button>
+  </div>
+  <div class="toast" id="toast"></div>
 
-function updatePendingBadge(){
-  const n=state.pendingIn.length, badge=document.getElementById('pending-badge');
-  if(badge){ badge.style.display=n>0?'inline':'none'; badge.textContent=n; }
-}
-
-// ── FRIENDS PAGE ─────────────────────────────────────────────────────────
-function renderFriends(){
-  const pendSec=document.getElementById('pending-section');
-  if(pendSec) pendSec.style.display=state.pendingIn.length?'block':'none';
-  const pendList=document.getElementById('pending-list');
-  if(pendList) pendList.innerHTML=state.pendingIn.map(f=>`
-    <div class="friend-card">
-      <div class="avatar" style="background:${f.color}22;color:${f.color};">${f.avatar}</div>
-      <div style="flex:1;"><div class="friend-name">${f.name}</div><div class="friend-sub">@${f.username}</div></div>
-      <span class="pending-badge-label">Wants to be friends 💩</span>
-      <button class="action-btn accept" onclick="acceptFriend('${f.docId}')">Accept</button>
-      <button class="action-btn decline" onclick="declineFriend('${f.docId}')">Decline</button>
-    </div>`).join('');
-  const mainList=document.getElementById('friends-list-main'); if(!mainList) return;
-  if(state.friends.length===0){ mainList.innerHTML=`<div class="empty-state"><span class="big-emoji">💩</span><p>No friends yet.<br>Search above to add someone!</p></div>`; return; }
-  mainList.innerHTML=state.friends.map(f=>`
-    <div class="friend-card">
-      <div class="avatar" style="background:${f.color}22;color:${f.color};">${f.avatar}</div>
-      <div style="flex:1;"><div class="friend-name">${f.name}</div><div class="friend-sub">@${f.username}</div></div>
-      <div class="friend-stats" style="margin-right:16px;">
-        <span class="count-pill">${f.today||0} 💩</span>
-        <span class="count-pill green">${weekSum(f.week)} this week</span>
-        <span class="count-pill pink">${f.month||0} this month</span>
-      </div>
-      <button class="action-btn remove" onclick="removeFriend('${f.uid}')">Remove</button>
-    </div>`).join('');
-}
-
-window.searchFriend = async function(){
-  const qText=document.getElementById('friend-search').value.trim().toLowerCase();
-  const results=document.getElementById('search-results');
-  if(!qText){ results.innerHTML=''; return; }
-  try {
-    const snap=await getDocs(query(collection(db,'users'),where('username','==',qText)));
-    const myUid=state.user.uid;
-    const friendUids=state.friends.map(f=>f.uid);
-    const pendUids=state.pendingIn.map(f=>f.uid);
-    if(snap.empty){ results.innerHTML=`<div style="padding:20px;color:var(--muted);font-size:14px;font-weight:600;">No user found with username "@${qText}"</div>`; return; }
-    let html=`<p class="section-title">Search Results</p>`;
-    snap.forEach(docSnap=>{
-      if(docSnap.id===myUid) return;
-      const u=docSnap.data(), color=colorFor(docSnap.id), avatar=avatarOf(u.name);
-      const btnHtml=friendUids.includes(docSnap.id)
-        ?`<span style="color:var(--green);font-weight:700;font-size:13px;">✅ Already friends</span>`
-        :pendUids.includes(docSnap.id)
-          ?`<span style="color:var(--muted);font-weight:700;font-size:13px;">⏳ Pending your acceptance</span>`
-          :`<button class="action-btn add" onclick="sendRequest('${docSnap.id}','${u.name}','${u.username}')">+ Add Friend</button>`;
-      html+=`<div class="friend-card"><div class="avatar" style="background:${color}22;color:${color};">${avatar}</div><div style="flex:1;"><div class="friend-name">${u.name}</div><div class="friend-sub">@${u.username}</div></div>${btnHtml}</div>`;
-    });
-    results.innerHTML=html;
-  } catch(err){ console.error(err); showToast('Search failed ❌ — check Firestore rules'); }
-};
-
-window.sendRequest = async function(toUid,toName){
-  try {
-    const myUid=state.user.uid;
-    const [c1,c2]=await Promise.all([
-      getDocs(query(collection(db,'friendships'),where('user1','==',myUid),where('user2','==',toUid))),
-      getDocs(query(collection(db,'friendships'),where('user1','==',toUid),where('user2','==',myUid)))
-    ]);
-    if(!c1.empty||!c2.empty){ showToast('Request already exists!'); return; }
-    await addDoc(collection(db,'friendships'),{ user1:myUid, user2:toUid, status:'pending', createdAt:serverTimestamp() });
-    document.getElementById('search-results').innerHTML='';
-    document.getElementById('friend-search').value='';
-    showToast(`Friend request sent to ${toName}! 💩`);
-  } catch(err){ console.error(err); showToast('Failed to send request ❌'); }
-};
-
-window.acceptFriend = async function(docId){
-  try{ await updateDoc(doc(db,'friendships',docId),{ status:'accepted' }); showToast('Friend accepted! 🎉'); }
-  catch(err){ console.error(err); showToast('Error ❌'); }
-};
-
-window.declineFriend = async function(docId){
-  try{ await deleteDoc(doc(db,'friendships',docId)); showToast('Request declined.'); }
-  catch(err){ console.error(err); showToast('Error ❌'); }
-};
-
-window.removeFriend = async function(friendUid){
-  try {
-    const uid=state.user.uid;
-    const [q1,q2]=await Promise.all([
-      getDocs(query(collection(db,'friendships'),where('user1','==',uid),where('user2','==',friendUid))),
-      getDocs(query(collection(db,'friendships'),where('user1','==',friendUid),where('user2','==',uid)))
-    ]);
-    await Promise.all([...q1.docs,...q2.docs].map(d=>deleteDoc(d.ref)));
-    showToast('Friend removed.');
-  } catch(err){ console.error(err); showToast('Error ❌'); }
-};
-
-// ── SETTINGS ─────────────────────────────────────────────────────────────
-function renderSettings(){
-  const name=state.user.name||'Your Name';
-  document.getElementById('settings-name').textContent=name;
-  document.getElementById('settings-username').textContent='@'+(state.user.username||'username');
-  document.getElementById('settings-avatar').textContent=name[0].toUpperCase();
-  document.getElementById('s-name-val').textContent=name;
-  document.getElementById('s-username-val').textContent='@'+(state.user.username||'');
-  document.getElementById('s-email-val').textContent=state.user.email||'';
-  document.getElementById('s-tz-val').textContent=getTzLabel();
-}
-
-let modalCallback=null;
-window.editField = function(label,isPw=false){
-  document.getElementById('modal-title').textContent='Edit '+label;
-  document.getElementById('modal-label').textContent=label;
-  const input=document.getElementById('modal-input');
-  input.type=isPw?'password':'text'; input.value='';
-  input.placeholder='Enter new '+label.toLowerCase()+'...';
-  document.getElementById('edit-modal').classList.add('open'); input.focus();
-  modalCallback=async val=>{
-    if(!state.user.uid) return showToast('Not logged in');
-    if(label==='Full Name') state.user.name=val;
-    if(label==='Username')  state.user.username=val.replace('@','').toLowerCase();
-    try{ await setDoc(doc(db,'users',state.user.uid),{ name:state.user.name, username:state.user.username },{ merge:true }); renderSettings(); renderHome(); showToast(label+' updated ✅'); }
-    catch(e){ showToast('Error saving ❌'); }
-  };
-};
-window.closeModal = ()=>document.getElementById('edit-modal').classList.remove('open');
-window.saveModal  = ()=>{ const val=document.getElementById('modal-input').value.trim(); if(!val){ showToast('Field cannot be empty'); return; } if(modalCallback) modalCallback(val); closeModal(); };
-document.getElementById('edit-modal').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeModal(); });
-</script>
+  <script type="module" src="static/js/app.js"></script>
 </body>
+
 </html>
