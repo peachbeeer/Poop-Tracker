@@ -1102,6 +1102,14 @@ body {
   object-fit: cover;
 }
 
+#profile-picture-input {
+  display: none;
+}
+
+.profile-upload-input {
+  display: none !important;
+}
+
 .profile-upload-btn {
   position: absolute;
   bottom: 0;

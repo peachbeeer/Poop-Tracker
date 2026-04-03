@@ -601,20 +601,7 @@ function renderSettings() {
 
 window.triggerProfilePictureUpload = function () {
   console.log('triggerProfilePictureUpload called');
-  try {
-    const input = document.getElementById('profile-picture-input');
-    console.log('Input element exists:', !!input);
-    if (!input) {
-      showToast('Error: File input not found ❌');
-      return;
-    }
-    console.log('Clicking file input...');
-    input.click();
-    showToast('Select an image from your phone 📱');
-  } catch (error) {
-    console.error('Error clicking input:', error);
-    showToast('Error opening file picker ❌');
-  }
+  // Label now handles this - left for compatibility
 };
 
 window.handleProfilePictureUpload = async function (event) {
