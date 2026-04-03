@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Oopsie Poopsie 💩</title>
   <link rel="icon" href="/asset/logo1544.ico" type="image/x-icon">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="static/css/style.css">
 </head>
 
@@ -20,10 +21,12 @@
 
     <div id="app-layout">
       <header class="topbar">
-        <button class="toggle-sidebar-btn" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+        <button class="toggle-sidebar-btn" id="sidebar-toggle" onclick="toggleSidebar()"
+          title="Toggle sidebar">☰</button>
         <div class="topbar-brand">💩 Oopsie Poopsie</div>
         <div class="topbar-right">
-          <div class="tz-badge">🌍 <span id="tz-label"></span>&nbsp;<span id="clock-time" style="font-weight:900;color:var(--red);"></span></div>
+          <div class="tz-badge">🌍 <span id="tz-label"></span>&nbsp;<span id="clock-time"
+              style="font-weight:900;color:var(--red);"></span></div>
           <div class="topbar-user" onclick="navTo('settings')">
             <div class="topbar-avatar" id="topbar-avatar">?</div>
             <span class="topbar-username" id="topbar-username">@username</span>
@@ -32,12 +35,15 @@
       </header>
 
       <aside class="sidebar">
-        <button class="nav-item active" id="nav-home" onclick="navTo('home')"><span class="nav-icon">🏠</span> Home</button>
+        <button class="nav-item active" id="nav-home" onclick="navTo('home')"><span class="nav-icon">🏠</span>
+          Home</button>
         <button class="nav-item" id="nav-friends" onclick="navTo('friends')">
           <span class="nav-icon">👥</span> Friends
-          <span id="pending-badge" style="margin-left:auto;background:var(--red);color:white;font-size:11px;padding:1px 7px;border-radius:20px;display:none;">0</span>
+          <span id="pending-badge"
+            style="margin-left:auto;background:var(--red);color:white;font-size:11px;padding:1px 7px;border-radius:20px;display:none;">0</span>
         </button>
-        <button class="nav-item" id="nav-settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span> Settings</button>
+        <button class="nav-item" id="nav-settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span>
+          Settings</button>
         <div class="nav-spacer"></div>
         <button class="nav-logout" onclick="doLogout()"><span class="nav-icon">🚪</span> Log Out</button>
       </aside>
@@ -51,18 +57,18 @@
             <div class="page-sub">Here's your poop dashboard for today.</div>
           </div>
           <div class="stats-grid">
-            <div class="stat-card streak">
-              <div class="stat-label">🔥 Current Streak</div>
-              <div class="stat-num" style="font-size:36px;" id="streak-val">0 days</div>
-              <div class="stat-sub" id="streak-sub">Start pooping!</div>
+            <div class="stat-card year">
+              <div class="stat-label" id="year-label">This Year</div>
+              <div class="stat-num" id="year-count" style="font-size:36px;">0</div>
+              <div class="stat-sub" id="year-date">poops in 2026</div>
             </div>
             <div class="stat-card">
-              <div class="stat-label">This Month</div>
+              <div class="stat-label" id="month-label">This Month</div>
               <div class="stat-num" id="month-count">0</div>
               <div class="stat-sub">poops logged</div>
             </div>
             <div class="stat-card green">
-              <div class="stat-label">This Week</div>
+              <div class="stat-label" id="week-label">This Week</div>
               <div class="stat-num" id="week-count">0</div>
               <div class="stat-sub">poops this week</div>
             </div>
@@ -73,7 +79,8 @@
                 <div class="card-title">Today's Poops 💩</div>
                 <div class="counter-widget">
                   <div class="counter-num" id="today-count">0</div>
-                  <div style="flex:1;text-align:center;color:var(--muted);font-size:14px;font-weight:600;" id="counter-msg">Press + to log a poop!</div>
+                  <div style="flex:1;text-align:center;color:var(--muted);font-size:14px;font-weight:600;"
+                    id="counter-msg">Press + to log a poop!</div>
                   <div class="counter-btns">
                     <button class="counter-btn minus" onclick="changeCount(-1)">−</button>
                     <button class="counter-btn plus" onclick="changeCount(1)">+</button>
@@ -101,7 +108,8 @@
             <div class="page-sub">Find friends and see how they're doing.</div>
           </div>
           <div class="search-row">
-            <input class="search-input" type="text" placeholder="Search by exact username (lowercase)..." id="friend-search">
+            <input class="search-input" type="text" placeholder="Search by exact username (lowercase)..."
+              id="friend-search">
             <button class="btn-search" onclick="searchFriend()">Search</button>
           </div>
           <div id="search-results" style="margin-bottom:20px;"></div>
@@ -112,6 +120,43 @@
           <div>
             <p class="section-title">My Friends</p>
             <div id="friends-list-main"></div>
+          </div>
+        </div>
+
+        <!-- FRIEND DETAILS -->
+        <div class="page" id="page-friend-details">
+          <div class="page-header">
+            <button class="back-btn" onclick="navTo('friends')">← Back</button>
+            <div>
+              <div class="page-title" id="friend-detail-name">Friend Name</div>
+              <div class="page-sub" id="friend-detail-username">@username</div>
+            </div>
+          </div>
+          <div class="friend-detail-stats">
+            <div class="stat-card year">
+              <div class="stat-label">Yearly</div>
+              <div class="stat-num" id="friend-year-count" style="font-size:36px;">0</div>
+              <div class="stat-sub" id="friend-year-date">poops in 2026</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Monthly</div>
+              <div class="stat-num" id="friend-month-count">0</div>
+              <div class="stat-sub">poops logged</div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-label">Weekly</div>
+              <div class="stat-num" id="friend-week-count">0</div>
+              <div class="stat-sub">poops this week</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Today</div>
+              <div class="stat-num" id="friend-today-count">0</div>
+              <div class="stat-sub">poops today</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Weekly Overview</div>
+            <div class="bar-chart" id="friend-bar-chart"></div>
           </div>
         </div>
 
@@ -132,21 +177,36 @@
             <div>
               <div class="settings-section">
                 <div class="settings-section-title">Account</div>
-                <div class="settings-row" onclick="editField('Full Name')"><span class="settings-row-icon">👤</span><span class="settings-row-label">Full Name</span><span class="settings-row-value" id="s-name-val">—</span><span class="settings-row-arrow">›</span></div>
-                <div class="settings-row" onclick="editField('Username')"><span class="settings-row-icon">🏷️</span><span class="settings-row-label">Username</span><span class="settings-row-value" id="s-username-val">—</span><span class="settings-row-arrow">›</span></div>
-                <div class="settings-row" style="cursor:default;"><span class="settings-row-icon">📧</span><span class="settings-row-label">Email</span><span class="settings-row-value" id="s-email-val">—</span></div>
-                <div class="settings-row" onclick="editField('Password',true)"><span class="settings-row-icon">🔒</span><span class="settings-row-label">Change Password</span><span class="settings-row-arrow">›</span></div>
+                <div class="settings-row" onclick="editField('Full Name')"><span
+                    class="settings-row-icon">👤</span><span class="settings-row-label">Full Name</span><span
+                    class="settings-row-value" id="s-name-val">—</span><span class="settings-row-arrow">›</span></div>
+                <div class="settings-row" onclick="editField('Username')"><span
+                    class="settings-row-icon">🏷️</span><span class="settings-row-label">Username</span><span
+                    class="settings-row-value" id="s-username-val">—</span><span class="settings-row-arrow">›</span>
+                </div>
+                <div class="settings-row" style="cursor:default;"><span class="settings-row-icon">📧</span><span
+                    class="settings-row-label">Email</span><span class="settings-row-value" id="s-email-val">—</span>
+                </div>
+                <div class="settings-row" onclick="editField('Password',true)"><span
+                    class="settings-row-icon">🔒</span><span class="settings-row-label">Change Password</span><span
+                    class="settings-row-arrow">›</span></div>
               </div>
             </div>
             <div>
               <div class="settings-section">
                 <div class="settings-section-title">Preferences</div>
-                <div class="settings-row" style="cursor:default;"><span class="settings-row-icon">🌍</span><span class="settings-row-label">Timezone</span><span class="settings-row-value" id="s-tz-val">Auto-detected</span></div>
+                <div class="settings-row" style="cursor:default;"><span class="settings-row-icon">🌍</span><span
+                    class="settings-row-label">Timezone</span><span class="settings-row-value"
+                    id="s-tz-val">Auto-detected</span></div>
               </div>
               <div class="settings-section" style="margin-top:16px;">
                 <div class="settings-section-title">Danger Zone</div>
-                <div class="settings-row" onclick="confirmDelete()"><span class="settings-row-icon">🗑️</span><span class="settings-row-label danger-label">Delete Account</span><span class="settings-row-arrow danger-label">›</span></div>
-                <div class="settings-row" onclick="doLogout()"><span class="settings-row-icon">🚪</span><span class="settings-row-label danger-label">Log Out</span><span class="settings-row-arrow danger-label">›</span></div>
+                <div class="settings-row" onclick="confirmDelete()"><span class="settings-row-icon">🗑️</span><span
+                    class="settings-row-label danger-label">Delete Account</span><span
+                    class="settings-row-arrow danger-label">›</span></div>
+                <div class="settings-row" onclick="doLogout()"><span class="settings-row-icon">🚪</span><span
+                    class="settings-row-label danger-label">Log Out</span><span
+                    class="settings-row-arrow danger-label">›</span></div>
               </div>
             </div>
           </div>
@@ -183,7 +243,8 @@
   <div class="modal-overlay" id="edit-modal">
     <div class="modal-box">
       <div class="modal-title" id="modal-title">Edit Field</div>
-      <div class="field-group"><label id="modal-label">Value</label><input id="modal-input" type="text" placeholder=""></div>
+      <div class="field-group"><label id="modal-label">Value</label><input id="modal-input" type="text" placeholder="">
+      </div>
       <div class="modal-btns">
         <button class="btn-cancel" onclick="closeModal()">Cancel</button>
         <button class="btn-save" onclick="saveModal()">Save</button>
