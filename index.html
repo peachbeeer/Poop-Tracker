@@ -172,10 +172,8 @@
           <div class="profile-card">
             <div class="profile-avatar-container">
               <div class="profile-avatar-lg" id="settings-avatar">?</div>
-              <div class="profile-upload-btn-wrapper">
-                <input type="file" id="profile-picture-input" accept="image/*" onchange="handleProfilePictureUpload(event)">
-                <div class="profile-upload-btn" title="Change profile picture">📷</div>
-              </div>
+              <input type="file" id="profile-picture-input" accept="image/*" onchange="handleProfilePictureUpload(event)">
+              <label for="profile-picture-input" class="profile-upload-btn" title="Change profile picture">📷</label>
             </div>
             <div class="profile-info">
               <div class="profile-name" id="settings-name">Your Name</div>

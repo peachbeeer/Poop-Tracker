@@ -24,6 +24,27 @@ window.testCloudinary = async function () {
   }
 };
 
+window.testFileInput = function () {
+  console.log('Testing file input label...');
+  const input = document.getElementById('profile-picture-input');
+  const label = document.querySelector('label[for="profile-picture-input"]');
+  
+  console.log('File input element:', input);
+  console.log('Label element:', label);
+  console.log('Input display:', window.getComputedStyle(input).display);
+  console.log('Label display:', window.getComputedStyle(label).display);
+  
+  if (!input) {
+    showToast('Error: File input not found ❌');
+  } else if (!label) {
+    showToast('Error: Label not found ❌');
+  } else {
+    showToast('File picker ready ✅');
+    console.log('Attempting to click label...');
+    label.click();
+  }
+};
+
 // ── STATE ──────────────────────────────────────────────────────────────
 const state = { user: { uid: '', name: '', username: '', email: '', profilePictureURL: '' }, today: 0, week: [0, 0, 0, 0, 0, 0, 0], month: 0, year: 0, streak: 0, lastPoopDate: '', friends: [], pendingIn: [], currentViewingFriend: null };
 let unsubA = null, unsubB = null, unsubP = null;
@@ -606,13 +627,20 @@ window.triggerProfilePictureUpload = function () {
 
 window.handleProfilePictureUpload = async function (event) {
   try {
+    console.log('handleProfilePictureUpload triggered');
+    console.log('Event:', event);
+    console.log('Event target:', event.target);
+    console.log('Files:', event.target.files);
+    
     const file = event.target.files?.[0];
     if (!file) {
       console.log('No file selected');
+      showToast('No file selected ❌');
       return;
     }
     
     console.log('File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+    showToast('File selected, uploading... ⏳');
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {

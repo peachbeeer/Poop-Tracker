@@ -1103,33 +1103,9 @@ body {
 }
 
 #profile-picture-input {
+  display: none;
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 32px;
-  height: 32px;
-  opacity: 0;
-  cursor: pointer;
-  z-index: 100;
-  margin: 0;
-  padding: 0;
-}
-
-.profile-upload-btn-wrapper {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 32px;
-  height: 32px;
-  pointer-events: none;
-}
-
-.profile-upload-btn-wrapper #profile-picture-input {
-  pointer-events: auto;
-}
-
-.profile-upload-input {
-  display: none !important;
+  visibility: hidden;
 }
 
 .profile-upload-btn {
@@ -1154,9 +1130,9 @@ body {
   user-select: none;
   padding: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  pointer-events: none;
+  pointer-events: auto;
   touch-action: manipulation;
-  z-index: 1;
+  z-index: 10;
 }
 
 .profile-upload-btn:hover {
