@@ -127,9 +127,12 @@
         <div class="page" id="page-friend-details">
           <div class="page-header">
             <button class="back-btn" onclick="navTo('friends')">← Back</button>
-            <div>
-              <div class="page-title" id="friend-detail-name">Friend Name</div>
-              <div class="page-sub" id="friend-detail-username">@username</div>
+          </div>
+          <div class="friend-detail-card">
+            <div class="friend-detail-avatar" id="friend-detail-avatar">?</div>
+            <div class="friend-detail-info">
+              <div class="friend-detail-name" id="friend-detail-name">Friend Name</div>
+              <div class="friend-detail-username" id="friend-detail-username">@username</div>
             </div>
           </div>
           <div class="friend-detail-stats">
@@ -167,7 +170,11 @@
             <div class="page-sub">Manage your account and preferences.</div>
           </div>
           <div class="profile-card">
-            <div class="profile-avatar-lg" id="settings-avatar">?</div>
+            <div class="profile-avatar-container">
+              <div class="profile-avatar-lg" id="settings-avatar">?</div>
+              <button class="profile-upload-btn" title="Change profile picture" onclick="document.getElementById('profile-picture-input').click()">📷</button>
+              <input type="file" id="profile-picture-input" accept="image/*" style="display:none;" onchange="handleProfilePictureUpload(event)">
+            </div>
             <div class="profile-info">
               <div class="profile-name" id="settings-name">Your Name</div>
               <div class="profile-uname" id="settings-username">@username</div>

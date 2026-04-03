@@ -6,8 +6,12 @@ const app = initializeApp({ apiKey: "AIzaSyCGVDkVu41U1AFqOeZFgFSyM1kitTGnLLs", a
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// ── CLOUDINARY CONSTANTS ────────────────────────────────────────────
+const CLOUDINARY_CLOUD_NAME = 'dd7xbjise';
+const CLOUDINARY_UPLOAD_PRESET = 'OopsiePoopsie';
+
 // ── STATE ──────────────────────────────────────────────────────────────
-const state = { user: { uid: '', name: '', username: '', email: '' }, today: 0, week: [0, 0, 0, 0, 0, 0, 0], month: 0, year: 0, streak: 0, lastPoopDate: '', friends: [], pendingIn: [], currentViewingFriend: null };
+const state = { user: { uid: '', name: '', username: '', email: '', profilePictureURL: '' }, today: 0, week: [0, 0, 0, 0, 0, 0, 0], month: 0, year: 0, streak: 0, lastPoopDate: '', friends: [], pendingIn: [], currentViewingFriend: null };
 let unsubA = null, unsubB = null, unsubP = null;
 
 // ── UTILS ───────────────────────────────────────────────────────────────
@@ -133,7 +137,7 @@ async function loadUserData(uid) {
   const snap = await getDoc(doc(db, 'users', uid));
   if (snap.exists()) {
     const d = snap.data();
-    state.user = { uid, name: d.name || '', username: d.username || '', email: d.email || '' };
+    state.user = { uid, name: d.name || '', username: d.username || '', email: d.email || '', profilePictureURL: d.profilePictureURL || '' };
     const processed = processStreakOnLoad(d);
     state.today = processed.today;
     state.month = processed.month;
@@ -305,10 +309,23 @@ function getISOWeekNumber() {
   return Math.round(((d - yearStart) / 86400000 + 1) / 7);
 }
 
+// ── AVATAR HELPER ───────────────────────────────────────────────────────
+function updateAvatarDisplay(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  
+  const name = state.user.name || 'User';
+  if (state.user.profilePictureURL) {
+    el.innerHTML = `<img src="${state.user.profilePictureURL}" alt="${name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+  } else {
+    el.textContent = name[0].toUpperCase();
+  }
+}
+
 function renderHome() {
   const name = state.user.name ? state.user.name.split(' ')[0] : 'there';
   document.getElementById('greeting-name').textContent = name;
-  document.getElementById('topbar-avatar').textContent = name[0].toUpperCase();
+  updateAvatarDisplay('topbar-avatar');
   document.getElementById('topbar-username').textContent = '@' + (state.user.username || '...');
   document.getElementById('today-count').textContent = state.today;
   document.getElementById('week-count').textContent = weekSum(state.week);
@@ -400,8 +417,8 @@ function renderFriendsHome() {
   const el = document.getElementById('friends-home-list'); if (!el) return;
   if (state.friends.length === 0) { el.innerHTML = `<div class="empty-state"><span class="big-emoji">🤷</span><p>No friends yet.<br>Add some in the Friends tab!</p></div>`; return; }
   el.innerHTML = state.friends.map(f => `
-    <div class="friend-row">
-      <div class="avatar" style="background:${f.color}22;color:${f.color};">${f.avatar}</div>
+    <div class="friend-row" onclick="viewFriendDetails('${f.uid}')">
+      <div class="avatar" style="background:${f.profilePictureURL ? 'transparent' : f.color + '22'};color:${f.color};">${f.profilePictureURL ? `<img src="${f.profilePictureURL}" alt="${f.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : f.avatar}</div>
       <div class="friend-info"><div class="friend-name">${f.name}</div><div class="friend-sub">@${f.username}</div></div>
       <div class="friend-stats">
         <span class="count-pill">${f.today || 0} 💩 today</span>
@@ -425,7 +442,7 @@ function renderFriends() {
   const pendList = document.getElementById('pending-list');
   if (pendList) pendList.innerHTML = state.pendingIn.map(f => `
     <div class="friend-card">
-      <div class="avatar" style="background:${f.color}22;color:${f.color};">${f.avatar}</div>
+      <div class="avatar" style="background:${f.profilePictureURL ? 'transparent' : f.color + '22'};color:${f.color};">${f.profilePictureURL ? `<img src="${f.profilePictureURL}" alt="${f.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : f.avatar}</div>
       <div style="flex:1;"><div class="friend-name">${f.name}</div><div class="friend-sub">@${f.username}</div></div>
       <span class="pending-badge-label">Wants to be friends 💩</span>
       <button class="action-btn accept" onclick="acceptFriend('${f.docId}')">Accept</button>
@@ -435,7 +452,7 @@ function renderFriends() {
   if (state.friends.length === 0) { mainList.innerHTML = `<div class="empty-state"><span class="big-emoji">💩</span><p>No friends yet.<br>Search above to add someone!</p></div>`; return; }
   mainList.innerHTML = state.friends.map(f => `
     <div class="friend-card" onclick="viewFriendDetails('${f.uid}')">
-      <div class="avatar" style="background:${f.color}22;color:${f.color};">${f.avatar}</div>
+      <div class="avatar" style="background:${f.profilePictureURL ? 'transparent' : f.color + '22'};color:${f.color};">${f.profilePictureURL ? `<img src="${f.profilePictureURL}" alt="${f.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : f.avatar}</div>
       <div style="flex:1;"><div class="friend-name">${f.name}</div><div class="friend-sub">@${f.username}</div></div>
       <div class="friend-stats" style="margin-right:16px;">
         <span class="count-pill">${f.today || 0} 💩</span>
@@ -461,6 +478,14 @@ function renderFriendDetails() {
   const f = state.currentViewingFriend;
   const now = new Date();
   const yearNum = now.getFullYear();
+  
+  // Display friend's profile picture or avatar
+  const avatarEl = document.getElementById('friend-detail-avatar');
+  if (f.profilePictureURL) {
+    avatarEl.innerHTML = `<img src="${f.profilePictureURL}" alt="${f.name}">`;
+  } else {
+    avatarEl.textContent = f.avatar || f.name[0].toUpperCase();
+  }
   
   document.getElementById('friend-detail-name').textContent = f.name;
   document.getElementById('friend-detail-username').textContent = '@' + f.username;
@@ -504,7 +529,8 @@ window.searchFriend = async function () {
         : pendUids.includes(docSnap.id)
           ? `<span style="color:var(--muted);font-weight:700;font-size:13px;">⏳ Pending your acceptance</span>`
           : `<button class="action-btn add" onclick="sendRequest('${docSnap.id}','${u.name}','${u.username}')">+ Add Friend</button>`;
-      html += `<div class="friend-card"><div class="avatar" style="background:${color}22;color:${color};">${avatar}</div><div style="flex:1;"><div class="friend-name">${u.name}</div><div class="friend-sub">@${u.username}</div></div>${btnHtml}</div>`;
+      const avatarHtml = u.profilePictureURL ? `<img src="${u.profilePictureURL}" alt="${u.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : avatar;
+      html += `<div class="friend-card"><div class="avatar" style="background:${u.profilePictureURL ? 'transparent' : color + '22'};color:${color};">${avatarHtml}</div><div style="flex:1;"><div class="friend-name">${u.name}</div><div class="friend-sub">@${u.username}</div></div>${btnHtml}</div>`;
     });
     results.innerHTML = html;
   } catch (err) { console.error(err); showToast('Search failed ❌ — check Firestore rules'); }
@@ -552,12 +578,68 @@ function renderSettings() {
   const name = state.user.name || 'Your Name';
   document.getElementById('settings-name').textContent = name;
   document.getElementById('settings-username').textContent = '@' + (state.user.username || 'username');
-  document.getElementById('settings-avatar').textContent = name[0].toUpperCase();
+  updateAvatarDisplay('settings-avatar');
   document.getElementById('s-name-val').textContent = name;
   document.getElementById('s-username-val').textContent = '@' + (state.user.username || '');
   document.getElementById('s-email-val').textContent = state.user.email || '';
   document.getElementById('s-tz-val').textContent = getTzLabel();
 }
+
+window.handleProfilePictureUpload = async function (event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Image too large. Max 5MB ❌');
+    return;
+  }
+  
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    showToast('Please select an image file ❌');
+    return;
+  }
+  
+  showToast('Uploading image... ⏳');
+  
+  try {
+    // Create FormData for Cloudinary upload
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('quality', 'auto');
+    formData.append('fetch_format', 'auto');
+    
+    // Upload to Cloudinary
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!response.ok) {
+      throw new Error('Cloudinary upload failed');
+    }
+    
+    const data = await response.json();
+    const downloadURL = data.secure_url;
+    
+    // Save URL to Firestore
+    const uid = state.user.uid;
+    state.user.profilePictureURL = downloadURL;
+    await setDoc(doc(db, 'users', uid), { profilePictureURL: downloadURL }, { merge: true });
+    
+    renderSettings();
+    renderHome();
+    showSuccessAlert('Profile picture updated! 📸');
+  } catch (error) {
+    console.error('Upload failed:', error);
+    showToast('Upload failed ❌');
+  }
+  
+  // Reset file input
+  event.target.value = '';
+};
 
 let modalCallback = null;
 window.editField = function (label, isPw = false) {
