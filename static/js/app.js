@@ -585,60 +585,81 @@ function renderSettings() {
   document.getElementById('s-tz-val').textContent = getTzLabel();
 }
 
+window.triggerProfilePictureUpload = function () {
+  const input = document.getElementById('profile-picture-input');
+  if (input) input.click();
+};
+
 window.handleProfilePictureUpload = async function (event) {
-  const file = event.target.files?.[0];
-  if (!file) return;
-  
-  // Validate file size (max 5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    showToast('Image too large. Max 5MB ❌');
-    return;
-  }
-  
-  // Validate file type
-  if (!file.type.startsWith('image/')) {
-    showToast('Please select an image file ❌');
-    return;
-  }
-  
-  showToast('Uploading image... ⏳');
-  
   try {
+    const file = event.target.files?.[0];
+    if (!file) {
+      console.log('No file selected');
+      return;
+    }
+    
+    console.log('File selected:', file.name, file.size, file.type);
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Image too large. Max 5MB ❌');
+      return;
+    }
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select an image file ❌');
+      return;
+    }
+    
+    console.log('File validation passed, starting upload...');
+    showToast('Uploading image... ⏳');
+    
     // Create FormData for Cloudinary upload
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('quality', 'auto');
-    formData.append('fetch_format', 'auto');
+    formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
+    
+    console.log('FormData created, sending to Cloudinary...');
     
     // Upload to Cloudinary
     const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
       method: 'POST',
-      body: formData
+      body: formData,
+      timeout: 30000
     });
     
+    console.log('Cloudinary response status:', response.status, response.ok);
+    
     if (!response.ok) {
-      throw new Error('Cloudinary upload failed');
+      const errorText = await response.text();
+      console.error('Cloudinary upload error:', response.status, errorText);
+      throw new Error(`Cloudinary upload failed: ${response.status}`);
     }
     
     const data = await response.json();
+    console.log('Cloudinary upload successful:', data.secure_url);
     const downloadURL = data.secure_url;
     
     // Save URL to Firestore
     const uid = state.user.uid;
+    console.log('Saving to Firestore for user:', uid);
     state.user.profilePictureURL = downloadURL;
     await setDoc(doc(db, 'users', uid), { profilePictureURL: downloadURL }, { merge: true });
     
+    console.log('Firestore update successful');
     renderSettings();
     renderHome();
     showSuccessAlert('Profile picture updated! 📸');
   } catch (error) {
     console.error('Upload failed:', error);
-    showToast('Upload failed ❌');
+    console.error('Error stack:', error.stack);
+    showToast('Upload failed: ' + (error.message || 'Unknown error') + ' ❌');
+  } finally {
+    // Reset file input
+    event.target.value = '';
   }
-  
-  // Reset file input
-  event.target.value = '';
 };
 
 let modalCallback = null;

@@ -1077,6 +1077,7 @@ body {
   width: 68px;
   height: 68px;
   flex-shrink: 0;
+  pointer-events: auto;
 }
 
 .profile-avatar-lg {
@@ -1105,20 +1106,27 @@ body {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   border-radius: 50%;
   background: var(--red);
   border: 2px solid white;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
   padding: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  touch-action: manipulation;
+  z-index: 10;
 }
 
 .profile-upload-btn:hover {
