@@ -1608,6 +1608,27 @@ body {
     padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 16px);
   }
 
+  /* Friend detail card responsive */
+  .friend-detail-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px;
+  }
+
+  .friend-detail-avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+  }
+
+  .friend-detail-info {
+    text-align: center;
+  }
+
+  .friend-detail-name {
+    font-size: 20px;
+  }
+
   /* Stats: 2 col then single for streak */
   .stats-grid {
     grid-template-columns: 1fr 1fr;
@@ -1699,6 +1720,25 @@ body {
 @media (max-width: 420px) {
   .stats-grid {
     gap: 8px;
+  }
+
+  .friend-detail-card {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .friend-detail-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .friend-detail-name {
+    font-size: 18px;
+  }
+
+  .friend-detail-username {
+    font-size: 12px;
   }
 
   .friend-detail-stats {
