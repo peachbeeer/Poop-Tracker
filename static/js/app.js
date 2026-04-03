@@ -9,6 +9,20 @@ const db = getFirestore(app);
 // ── CLOUDINARY CONSTANTS ────────────────────────────────────────────
 const CLOUDINARY_CLOUD_NAME = 'dd7xbjise';
 const CLOUDINARY_UPLOAD_PRESET = 'OopsiePoopsie';
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+// Test Cloudinary connectivity
+window.testCloudinary = async function () {
+  console.log('Testing Cloudinary connection...');
+  try {
+    const response = await fetch(CLOUDINARY_UPLOAD_URL, { method: 'OPTIONS' });
+    console.log('Cloudinary test response:', response.status, response.ok);
+    showToast('Cloudinary: ' + (response.ok ? 'Connected ✅' : 'Error ' + response.status + ' ❌'));
+  } catch (error) {
+    console.error('Cloudinary test failed:', error);
+    showToast('Cloudinary connection failed ❌');
+  }
+};
 
 // ── STATE ──────────────────────────────────────────────────────────────
 const state = { user: { uid: '', name: '', username: '', email: '', profilePictureURL: '' }, today: 0, week: [0, 0, 0, 0, 0, 0, 0], month: 0, year: 0, streak: 0, lastPoopDate: '', friends: [], pendingIn: [], currentViewingFriend: null };
@@ -586,8 +600,21 @@ function renderSettings() {
 }
 
 window.triggerProfilePictureUpload = function () {
-  const input = document.getElementById('profile-picture-input');
-  if (input) input.click();
+  console.log('triggerProfilePictureUpload called');
+  try {
+    const input = document.getElementById('profile-picture-input');
+    console.log('Input element exists:', !!input);
+    if (!input) {
+      showToast('Error: File input not found ❌');
+      return;
+    }
+    console.log('Clicking file input...');
+    input.click();
+    showToast('Select an image from your phone 📱');
+  } catch (error) {
+    console.error('Error clicking input:', error);
+    showToast('Error opening file picker ❌');
+  }
 };
 
 window.handleProfilePictureUpload = async function (event) {
@@ -598,67 +625,78 @@ window.handleProfilePictureUpload = async function (event) {
       return;
     }
     
-    console.log('File selected:', file.name, file.size, file.type);
+    console.log('File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       showToast('Image too large. Max 5MB ❌');
+      console.log('File rejected: too large');
       return;
     }
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
       showToast('Please select an image file ❌');
+      console.log('File rejected: not an image');
       return;
     }
     
-    console.log('File validation passed, starting upload...');
+    console.log('File validation passed');
     showToast('Uploading image... ⏳');
     
     // Create FormData for Cloudinary upload
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
     
-    console.log('FormData created, sending to Cloudinary...');
+    console.log('Uploading to:', CLOUDINARY_UPLOAD_URL);
+    console.log('Preset:', CLOUDINARY_UPLOAD_PRESET);
     
     // Upload to Cloudinary
-    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    const response = await fetch(CLOUDINARY_UPLOAD_URL, {
       method: 'POST',
-      body: formData,
-      timeout: 30000
+      body: formData
     });
     
-    console.log('Cloudinary response status:', response.status, response.ok);
+    console.log('Upload response status:', response.status);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Cloudinary upload error:', response.status, errorText);
-      throw new Error(`Cloudinary upload failed: ${response.status}`);
+      console.error('Cloudinary error response:', response.status, errorText);
+      
+      if (response.status === 400) {
+        throw new Error('Invalid upload preset or settings');
+      } else if (response.status === 401) {
+        throw new Error('Unauthorized - check upload preset');
+      } else if (response.status === 404) {
+        throw new Error('Cloudinary endpoint not found');
+      } else {
+        throw new Error(`Upload failed (${response.status})`);
+      }
     }
     
     const data = await response.json();
-    console.log('Cloudinary upload successful:', data.secure_url);
+    console.log('Upload successful, URL:', data.secure_url);
     const downloadURL = data.secure_url;
     
     // Save URL to Firestore
     const uid = state.user.uid;
-    console.log('Saving to Firestore for user:', uid);
+    console.log('Saving to Firestore - User:', uid);
     state.user.profilePictureURL = downloadURL;
     await setDoc(doc(db, 'users', uid), { profilePictureURL: downloadURL }, { merge: true });
     
-    console.log('Firestore update successful');
+    console.log('Firestore update complete');
     renderSettings();
     renderHome();
+    renderFriendsHome();
     showSuccessAlert('Profile picture updated! 📸');
   } catch (error) {
-    console.error('Upload failed:', error);
-    console.error('Error stack:', error.stack);
-    showToast('Upload failed: ' + (error.message || 'Unknown error') + ' ❌');
+    console.error('Upload error:', error.message);
+    console.error('Full error:', error);
+    showToast('Upload failed: ' + error.message + ' ❌');
   } finally {
     // Reset file input
-    event.target.value = '';
+    if (event.target) event.target.value = '';
   }
 };
 
