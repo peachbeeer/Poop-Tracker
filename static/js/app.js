@@ -600,15 +600,8 @@ function renderSettings() {
 }
 
 window.triggerProfilePictureUpload = function () {
-  console.log('Opening file picker...');
-  const input = document.getElementById('profile-picture-input');
-  if (input) {
-    console.log('File input found, clicking...');
-    input.click();
-  } else {
-    console.error('File input not found!');
-    showToast('Error: Cannot open file picker ❌');
-  }
+  console.log('triggerProfilePictureUpload called');
+  // Label now handles this - left for compatibility
 };
 
 window.handleProfilePictureUpload = async function (event) {
