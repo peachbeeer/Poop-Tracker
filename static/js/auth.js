@@ -6,6 +6,32 @@ const app = initializeApp({ apiKey: "AIzaSyCGVDkVu41U1AFqOeZFgFSyM1kitTGnLLs", a
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// ── THEME INIT ──────────────────────────────────────────────────────────
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateAuthThemeIcon();
+}
+
+function updateAuthThemeIcon() {
+  const btn = document.getElementById('auth-theme-toggle');
+  if (btn) {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    btn.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+  }
+}
+
+window.toggleAuthTheme = function() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme') || 'light';
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateAuthThemeIcon();
+};
+
+initTheme();
+
 // ── If already logged in, skip straight to the app ────────────────────────
 onAuthStateChanged(auth, user => {
   if (user) window.location.replace('index.html');

@@ -25,6 +25,22 @@
   --bottom-nav-h: 64px;
 }
 
+/* ── DARK MODE ─────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --red: #e85a6a;
+  --red-dark: #c0394b;
+  --red-light: #2d1a1a;
+  --bg: #1a1a1a;
+  --white: #2a2a2a;
+  --text: #e8e8e8;
+  --muted: #a0a0a0;
+  --blue: #6a9fd9;
+  --blue-light: #1a2a4a;
+  --blue-dark: #4a7ab9;
+  --green: #5aaa7a;
+  --border: #3a3a3a;
+}
+
 html {
   height: 100%;
   -webkit-text-size-adjust: 100%;
@@ -299,6 +315,25 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.theme-toggle-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: var(--text);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--red-light);
+  transform: scale(1.1);
 }
 
 .tz-badge {

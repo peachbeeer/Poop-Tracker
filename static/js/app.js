@@ -48,6 +48,29 @@ window.testFileInput = function () {
 // ── STATE ──────────────────────────────────────────────────────────────
 const state = { user: { uid: '', name: '', username: '', email: '', profilePictureURL: '' }, today: 0, week: [0, 0, 0, 0, 0, 0, 0], month: 0, year: 0, streak: 0, lastPoopDate: '', friends: [], pendingIn: [], currentViewingFriend: null, navHistory: ['home'] };
 let unsubA = null, unsubB = null, unsubP = null;
+
+// ── THEME TOGGLE ────────────────────────────────────────────────────────
+window.toggleTheme = function() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme') || 'light';
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeIcon();
+};
+
+function updateThemeIcon() {
+  const btn = document.getElementById('theme-toggle');
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  btn.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+}
+
+// Initialize theme on page load
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
 let exitConfirmActive = false;
 
 // ── UTILS ───────────────────────────────────────────────────────────────
@@ -283,6 +306,7 @@ function stopListeners() { [unsubA, unsubB, unsubP].forEach(u => u && u()); unsu
 
 // ── AUTH STATE ───────────────────────────────────────────────────────────
 onAuthStateChanged(auth, async user => {
+  initTheme();
   if (user) {
     await loadUserData(user.uid);
     startListeners(user.uid);

@@ -5,6 +5,13 @@
   --bg: #fdf0f0; --white: #fff; --text: #3a1a1a; --muted: #8a5555;
   --border: #f0d0d0; --green: #4a8a6a;
 }
+
+/* ── DARK MODE ─────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --red: #e85a6a; --red-dark: #c0394b; --red-light: #2d1a1a;
+  --bg: #1a1a1a; --white: #2a2a2a; --text: #e8e8e8; --muted: #a0a0a0;
+  --border: #3a3a3a; --green: #5aaa7a;
+}
 html { height: 100%; -webkit-text-size-adjust: 100%; }
 body {
   font-family: 'Nunito', sans-serif;
@@ -12,6 +19,31 @@ body {
   color: var(--text);
   height: 100%;
   min-height: 100vh;
+}
+
+/* ── THEME TOGGLE ──────────────────────────────────────────────── */
+.auth-theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.auth-theme-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 /* ── SCREENS ───────────────────────────────────────────────────── */
