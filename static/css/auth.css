@@ -131,6 +131,18 @@ body {
 .btn-primary:active { transform: scale(0.97); box-shadow: none; }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
+.btn-google {
+  background: white; color: var(--text); border: 1.5px solid var(--border);
+  padding: 14px 24px; border-radius: 10px;
+  font-family: 'Nunito', sans-serif; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800; letter-spacing: 1px;
+  cursor: pointer; width: 100%;
+  transition: all 0.2s; text-transform: uppercase;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.btn-google:hover { background: #fdfdfd; border-color: #dcdcdc; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.btn-google:active { transform: scale(0.97); box-shadow: none; }
+
 /* ── LINKS ─────────────────────────────────────────────────────── */
 .auth-links {
   display: flex; justify-content: space-between;
