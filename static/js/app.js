@@ -49,6 +49,10 @@ window.testFileInput = function () {
 const state = { user: { uid: '', name: '', username: '', email: '', profilePictureURL: '' }, today: 0, week: [0, 0, 0, 0, 0, 0, 0], month: 0, year: 0, streak: 0, lastPoopDate: '', friends: [], pendingIn: [], currentViewingFriend: null };
 let unsubA = null, unsubB = null, unsubP = null;
 
+// ── NAVIGATION HISTORY ─────────────────────────────────────────────────
+let navigationHistory = ['home'];
+const MAX_HISTORY = 10;
+
 // ── UTILS ───────────────────────────────────────────────────────────────
 const COLORS = ['#4a6fa5', '#c0394b', '#4a8a6a', '#7c4dff', '#f57c00', '#0097a7', '#e91e63'];
 const colorFor = uid => COLORS[uid.charCodeAt(0) % COLORS.length];
@@ -86,6 +90,14 @@ function showApp() {
   // Show bottom nav on mobile
   if (window.innerWidth <= 768) {
     document.getElementById('bottom-nav').style.display = 'block';
+  }
+  
+  // Setup back button handler for mobile devices
+  if (window.cordova) {
+    document.addEventListener('backbutton', handleBackButton, false);
+  } else {
+    // Fallback for browsers without Cordova
+    window.addEventListener('popstate', handleBackButton);
   }
 }
 
@@ -317,10 +329,45 @@ window.navTo = function (page) {
   const n = document.getElementById('nav-' + page); if (n) n.classList.add('active');
   const bn = document.getElementById('bnav-' + page); if (bn) bn.classList.add('active');
   closeMobileSidebar();
+  
+  // Add to navigation history if it's a different page
+  if (navigationHistory[navigationHistory.length - 1] !== page) {
+    navigationHistory.push(page);
+    // Keep history size manageable
+    if (navigationHistory.length > MAX_HISTORY) {
+      navigationHistory.shift();
+    }
+  }
+  
   if (page === 'home') renderHome();
   if (page === 'friends') renderFriends();
   if (page === 'friend-details') renderFriendDetails();
   if (page === 'settings') renderSettings();
+};
+
+// ── BACK BUTTON HANDLER ────────────────────────────────────────────────
+window.handleBackButton = function () {
+  const currentPage = navigationHistory[navigationHistory.length - 1];
+  
+  if (currentPage === 'home') {
+    // On home page - offer to close app
+    const confirmExit = confirm('Exit Oopsie Poopsie? 💩');
+    if (confirmExit) {
+      if (navigator.app && navigator.app.exitApp) {
+        navigator.app.exitApp(); // Cordova exit
+      } else if (window.cordova && window.cordova.exec) {
+        // For other Cordova scenarios
+        navigator.app.exitApp();
+      }
+      // Fallback for web/no-exit capability
+      showToast('Close this tab to exit 👋');
+    }
+  } else {
+    // Navigate back
+    navigationHistory.pop(); // Remove current page
+    const previousPage = navigationHistory[navigationHistory.length - 1] || 'home';
+    navTo(previousPage);
+  }
 };
 
 // ── HOME ─────────────────────────────────────────────────────────────────
