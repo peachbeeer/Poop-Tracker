@@ -193,7 +193,7 @@ body {
 
 .field-group input:focus {
   border-color: var(--red);
-  background: white;
+  background: var(--white);
 }
 
 .field-group input::placeholder {
@@ -286,7 +286,7 @@ body {
 /* ── TOPBAR ───────────────────────────────────────────────────────── */
 .topbar {
   grid-column: 1 / -1;
-  background: white;
+  background: var(--white);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -385,7 +385,7 @@ body {
 
 /* ── SIDEBAR — DESKTOP ────────────────────────────────────────────── */
 .sidebar {
-  background: white;
+  background: var(--white);
   border-right: 1px solid var(--border);
   padding: 20px 16px;
   display: flex;
@@ -522,7 +522,7 @@ body {
   left: 0;
   right: 0;
   height: var(--bottom-nav-h);
-  background: white;
+  background: var(--white);
   border-top: 1px solid var(--border);
   z-index: 90;
   padding-bottom: env(safe-area-inset-bottom);
@@ -667,7 +667,7 @@ body {
 
 /* ── CARDS ────────────────────────────────────────────────────────── */
 .card {
-  background: white;
+  background: var(--white);
   border-radius: 14px;
   border: 1px solid var(--border);
   padding: 20px;
@@ -933,8 +933,9 @@ body {
 }
 
 .count-pill.green {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--green);
+  color: white;
+  opacity: 0.9;
 }
 
 .count-pill.pink {
@@ -950,7 +951,7 @@ body {
 
 .search-input {
   flex: 1;
-  background: white;
+  background: var(--white);
   border: 1.5px solid var(--border);
   border-radius: 10px;
   padding: 12px 14px;
@@ -988,7 +989,7 @@ body {
 }
 
 .friend-card {
-  background: white;
+  background: var(--white);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 20px 24px;
@@ -1003,7 +1004,7 @@ body {
 
 .friend-card:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  background: #fafafa;
+  background: var(--bg);
 }
 
 .action-btn {
@@ -1056,8 +1057,8 @@ body {
 }
 
 .pending-badge-label {
-  background: #fff3cd;
-  color: #8a6800;
+  background: var(--red-light);
+  color: var(--red-dark);
   font-size: 11px;
   font-weight: 700;
   padding: 3px 10px;
@@ -1195,7 +1196,7 @@ body {
 }
 
 .settings-section {
-  background: white;
+  background: var(--white);
   border-radius: 14px;
   border: 1px solid var(--border);
   overflow: hidden;
@@ -1281,7 +1282,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #d0a0a0;
+  background: var(--muted);
   border-radius: 24px;
   transition: 0.3s;
 }
@@ -1293,7 +1294,7 @@ body {
   height: 18px;
   left: 3px;
   bottom: 3px;
-  background: white;
+  background: var(--white);
   border-radius: 50%;
   transition: 0.3s;
 }
@@ -1323,7 +1324,7 @@ body {
 }
 
 .modal-box {
-  background: white;
+  background: var(--white);
   border-radius: 20px;
   padding: 28px;
   width: 440px;
