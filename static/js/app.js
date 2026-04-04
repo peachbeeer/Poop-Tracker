@@ -46,12 +46,9 @@ window.testFileInput = function () {
 };
 
 // ── STATE ──────────────────────────────────────────────────────────────
-const state = { user: { uid: '', name: '', username: '', email: '', profilePictureURL: '' }, today: 0, week: [0, 0, 0, 0, 0, 0, 0], month: 0, year: 0, streak: 0, lastPoopDate: '', friends: [], pendingIn: [], currentViewingFriend: null };
+const state = { user: { uid: '', name: '', username: '', email: '', profilePictureURL: '' }, today: 0, week: [0, 0, 0, 0, 0, 0, 0], month: 0, year: 0, streak: 0, lastPoopDate: '', friends: [], pendingIn: [], currentViewingFriend: null, navHistory: ['home'] };
 let unsubA = null, unsubB = null, unsubP = null;
-
-// ── NAVIGATION HISTORY ─────────────────────────────────────────────────
-let navigationHistory = ['home'];
-const MAX_HISTORY = 10;
+let exitConfirmActive = false;
 
 // ── UTILS ───────────────────────────────────────────────────────────────
 const COLORS = ['#4a6fa5', '#c0394b', '#4a8a6a', '#7c4dff', '#f57c00', '#0097a7', '#e91e63'];
@@ -92,13 +89,55 @@ function showApp() {
     document.getElementById('bottom-nav').style.display = 'block';
   }
   
-  // Setup back button handler for mobile devices
+  // Register back button handler after app is ready
+  setupBackButtonHandler();
+}
+
+// ── BACK BUTTON HANDLER ────────────────────────────────────────────────
+function setupBackButtonHandler() {
+  // Handle device back button (Android/Niotron)
   if (window.cordova) {
-    document.addEventListener('backbutton', handleBackButton, false);
-  } else {
-    // Fallback for browsers without Cordova
-    window.addEventListener('popstate', handleBackButton);
+    document.addEventListener('backbutton', onDeviceBackButton, false);
   }
+  
+  // Handle browser back button event
+  window.addEventListener('popstate', onDeviceBackButton);
+}
+
+function onDeviceBackButton(e) {
+  e.preventDefault();
+  
+  const currentPage = document.querySelector('.page.active')?.id || 'page-home';
+  const isHomePage = currentPage === 'page-home';
+  
+  if (isHomePage) {
+    // On home page - show exit confirmation
+    showExitConfirmation();
+  } else {
+    // Not on home page - go back to home
+    navTo('home');
+  }
+}
+
+function showExitConfirmation() {
+  if (exitConfirmActive) return; // Prevent multiple dialogs
+  exitConfirmActive = true;
+  
+  const confirmed = confirm('Close Oopsie Poopsie? 💩\n\nTap "OK" to close or "Cancel" to stay.');
+  
+  if (confirmed) {
+    // User confirmed exit
+    if (window.cordova && navigator.app) {
+      navigator.app.exitApp();
+    } else if (window.cordova && navigator.device) {
+      navigator.device.exitApp();
+    } else {
+      // Fallback for web
+      window.close();
+    }
+  }
+  
+  exitConfirmActive = false;
 }
 
 // ── STREAK LOGIC ────────────────────────────────────────────────────────
@@ -322,6 +361,11 @@ window.addEventListener('resize', () => {
 
 // ── NAV ─────────────────────────────────────────────────────────────────
 window.navTo = function (page) {
+  // Track navigation history for back button
+  if (state.navHistory[state.navHistory.length - 1] !== page) {
+    state.navHistory.push(page);
+  }
+  
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
@@ -329,45 +373,10 @@ window.navTo = function (page) {
   const n = document.getElementById('nav-' + page); if (n) n.classList.add('active');
   const bn = document.getElementById('bnav-' + page); if (bn) bn.classList.add('active');
   closeMobileSidebar();
-  
-  // Add to navigation history if it's a different page
-  if (navigationHistory[navigationHistory.length - 1] !== page) {
-    navigationHistory.push(page);
-    // Keep history size manageable
-    if (navigationHistory.length > MAX_HISTORY) {
-      navigationHistory.shift();
-    }
-  }
-  
   if (page === 'home') renderHome();
   if (page === 'friends') renderFriends();
   if (page === 'friend-details') renderFriendDetails();
   if (page === 'settings') renderSettings();
-};
-
-// ── BACK BUTTON HANDLER ────────────────────────────────────────────────
-window.handleBackButton = function () {
-  const currentPage = navigationHistory[navigationHistory.length - 1];
-  
-  if (currentPage === 'home') {
-    // On home page - offer to close app
-    const confirmExit = confirm('Exit Oopsie Poopsie? 💩');
-    if (confirmExit) {
-      if (navigator.app && navigator.app.exitApp) {
-        navigator.app.exitApp(); // Cordova exit
-      } else if (window.cordova && window.cordova.exec) {
-        // For other Cordova scenarios
-        navigator.app.exitApp();
-      }
-      // Fallback for web/no-exit capability
-      showToast('Close this tab to exit 👋');
-    }
-  } else {
-    // Navigate back
-    navigationHistory.pop(); // Remove current page
-    const previousPage = navigationHistory[navigationHistory.length - 1] || 'home';
-    navTo(previousPage);
-  }
 };
 
 // ── HOME ─────────────────────────────────────────────────────────────────
