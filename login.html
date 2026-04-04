@@ -60,17 +60,6 @@
               autocomplete="current-password"></div>
           <button class="btn-primary" id="login-btn" onclick="doLogin()">LOG IN</button>
           
-          <div style="display:flex;align-items:center;margin:16px 0;">
-            <div style="flex:1;height:1px;background:var(--border);"></div>
-            <div style="padding:0 12px;color:var(--muted);font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;">or</div>
-            <div style="flex:1;height:1px;background:var(--border);"></div>
-          </div>
-          
-          <button class="btn-google" onclick="doGoogleAuth()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:20px;height:20px;margin-right:8px;">
-            Continue with Google
-          </button>
-
           <div class="auth-links">
             <button class="link-btn" onclick="show('forgot')">Forgot password?</button>
             <button class="link-btn" onclick="show('signup')">Create an account →</button>
@@ -103,17 +92,6 @@
           <div class="field-group"><label>Password</label><input type="password" placeholder="Choose a strong password"
               id="signup-pw" autocomplete="new-password"></div>
           <button class="btn-primary" id="signup-btn" onclick="doSignup()">CREATE ACCOUNT</button>
-
-          <div style="display:flex;align-items:center;margin:16px 0;">
-            <div style="flex:1;height:1px;background:var(--border);"></div>
-            <div style="padding:0 12px;color:var(--muted);font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;">or</div>
-            <div style="flex:1;height:1px;background:var(--border);"></div>
-          </div>
-          
-          <button class="btn-google" onclick="doGoogleAuth()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:20px;height:20px;margin-right:8px;">
-            Continue with Google
-          </button>
 
           <div class="auth-links">
             <button class="link-btn" onclick="show('login')">← Already have an account?</button>
