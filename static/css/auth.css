@@ -145,8 +145,16 @@ body {
   -webkit-appearance: none;
   appearance: none;
 }
-.field-group input:focus { border-color: var(--red); background: white; }
+.field-group input:focus { border-color: var(--red); background: var(--bg); }
 .field-group input::placeholder { color: #c0a0a0; }
+/* Keep browser-autofilled credentials dark in dark mode too. */
+.field-group input:-webkit-autofill,
+.field-group input:-webkit-autofill:hover,
+.field-group input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--bg) inset;
+  transition: background-color 9999s ease-out 0s;
+}
 
 /* ── BUTTONS ───────────────────────────────────────────────────── */
 .btn-primary {

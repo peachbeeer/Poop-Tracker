@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, setPersistence, browserLocalPersistence, deleteUser, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const app = initializeApp({ apiKey: "AIzaSyCGVDkVu41U1AFqOeZFgFSyM1kitTGnLLs", authDomain: "oopsie-poopsie-c32d7.firebaseapp.com", projectId: "oopsie-poopsie-c32d7", storageBucket: "oopsie-poopsie-c32d7.firebasestorage.app", messagingSenderId: "1074032955615", appId: "1:1074032955615:web:ed6e9c837aca3d5b0f596a" });
@@ -39,9 +39,12 @@ window.toggleAuthTheme = function() {
 
 initTheme();
 
+// Do not redirect while signup is still creating the Firestore profile.
+let signupInProgress = false;
+
 // ── If already logged in, skip straight to the app ────────────────────────
 onAuthStateChanged(auth, user => {
-  if (user) window.location.replace('index.html');
+  if (user && !signupInProgress) window.location.replace('index.html');
 });
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
@@ -75,11 +78,16 @@ window.doSignup = async function () {
   const btn = document.getElementById('signup-btn');
   btn.disabled = true; btn.textContent = 'Creating…';
 
+  let createdUser = null;
   try {
     const taken = await getDocs(query(collection(db, 'users'), where('username', '==', username)));
     if (!taken.empty) { showToast('Username already taken ❌'); return; }
 
+    // Firebase Auth signs the user in immediately. Set this first so the
+    // auth observer cannot navigate away before the profile document saves.
+    signupInProgress = true;
     const cred = await createUserWithEmailAndPassword(auth, email, pw);
+    createdUser = cred.user;
     await setDoc(doc(db, 'users', cred.user.uid), {
       name, username, email,
       today: 0, month: 0, week: [0, 0, 0, 0, 0, 0, 0],
@@ -89,9 +97,15 @@ window.doSignup = async function () {
       createdAt: serverTimestamp()
     });
     showToast('Account created! 🎉', 1000);
-    setTimeout(() => window.location.replace('index.html'), 600);
+    window.location.replace('index.html');
   } catch (err) {
     console.error('Signup error:', err.code, err.message);
+    // A Firestore profile is mandatory for friends. Remove an Auth account
+    // whose profile write failed so the user can sign up again cleanly.
+    if (createdUser) {
+      try { await deleteUser(createdUser); } catch (cleanupError) { console.error('Failed to remove incomplete account:', cleanupError); }
+      try { await signOut(auth); } catch (cleanupError) { console.error('Failed to sign out after failed signup:', cleanupError); }
+    }
     if (err.code === 'auth/operation-not-supported-in-this-environment') {
       showToast('Authentication service unavailable. Please try again in a few moments.');
     } else if (err.code === 'auth/email-already-in-use') {
@@ -104,7 +118,7 @@ window.doSignup = async function () {
       showToast(err.message || 'Signup failed. Please try again.');
     }
   }
-  finally { btn.disabled = false; btn.textContent = 'CREATE ACCOUNT'; }
+  finally { signupInProgress = false; btn.disabled = false; btn.textContent = 'CREATE ACCOUNT'; }
 };
 
 // ── LOGIN ─────────────────────────────────────────────────────────────────
@@ -141,11 +155,20 @@ window.doLogin = async function () {
 window.doForgot = async function () {
   const email = document.getElementById('forgot-email').value.trim();
   if (!email) { showToast('Enter your email'); return; }
+
+  const btn = document.getElementById('forgot-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
   try {
     await sendPasswordResetEmail(auth, email);
     document.getElementById('forgot-success').style.display = 'block';
     setTimeout(() => show('login'), 2500);
   } catch (err) { showToast(err.message); }
+  finally {
+    btn.disabled = false;
+    btn.textContent = 'SEND RESET LINK';
+  }
 };
 
 // ── Enter key support ────────────────────────────────────────────────────

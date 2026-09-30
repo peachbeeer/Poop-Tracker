@@ -1,0 +1,46 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isFriendParticipant(data) {
+      return signedIn() &&
+        (data.user1 == request.auth.uid || data.user2 == request.auth.uid);
+    }
+
+    // Profiles are searchable by username and readable by signed-in users so
+    // the app can show a friend's name/avatar. Only the owner can edit theirs.
+    match /users/{userId} {
+      allow get, list: if signedIn();
+      allow create, update, delete: if signedIn() && request.auth.uid == userId;
+    }
+
+    match /friendships/{friendshipId} {
+      allow get, list: if isFriendParticipant(resource.data);
+
+      // Only the sender can create a pending request addressed to someone else.
+      allow create: if signedIn() &&
+        request.resource.data.user1 == request.auth.uid &&
+        request.resource.data.user2 != request.auth.uid &&
+        request.resource.data.status == 'pending';
+
+      // Only the recipient can accept, and accepting changes only status.
+      allow update: if isFriendParticipant(resource.data) &&
+        resource.data.user2 == request.auth.uid &&
+        request.resource.data.status == 'accepted' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+
+      // Either participant can decline, cancel, or remove a friendship.
+      allow delete: if isFriendParticipant(resource.data);
+    }
+
+    // Direct browser access is denied. The Python service uses the Firebase
+    // Admin SDK and returns markers only after checking accepted friendship.
+    match /shared_locations/{userId} {
+      allow read, write: if false;
+    }
+  }
+}

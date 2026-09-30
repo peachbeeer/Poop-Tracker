@@ -11,10 +11,17 @@
   <link rel="icon" href="/asset/logo1544.ico" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="static/css/style.css?v=20260404">
 </head>
 
 <body>
+
+  <!-- ANIMATION: short opening line sequence, removed after authenticated app load. -->
+  <div class="app-intro" id="app-intro" aria-hidden="true">
+    <div class="intro-mark">💩</div>
+    <div class="intro-lines"><span></span><span></span><span></span></div>
+  </div>
 
   <!-- APP -->
   <div id="app-wrap" style="display:none;">
@@ -88,9 +95,13 @@
                   <div class="counter-btns">
                     <button class="counter-btn minus" onclick="changeCount(-1)">−</button>
                     <button class="counter-btn plus" onclick="changeCount(1)">+</button>
+                    <button class="counter-btn sound" id="poop-sound-toggle" onclick="togglePoopSound()" title="Toggle poop sound" aria-label="Toggle poop sound">🔊</button>
                   </div>
                 </div>
               </div>
+              <button class="location-launch" onclick="openLocationMap()" title="Show my location and friends who are sharing theirs">
+                <span aria-hidden="true">📍</span> Location
+              </button>
               <div class="card">
                 <div class="card-title">Weekly Overview</div>
                 <div class="bar-chart" id="bar-chart"></div>
@@ -165,6 +176,9 @@
             <div class="card-title">Weekly Overview</div>
             <div class="bar-chart" id="friend-bar-chart"></div>
           </div>
+          <button class="location-launch" onclick="viewCurrentFriendLocation()" title="Show this friend's shared location">
+            <span aria-hidden="true">📍</span> View location
+          </button>
         </div>
 
         <!-- SETTINGS -->
@@ -262,6 +276,16 @@
       </div>
     </div>
   </div>
+  <div class="location-modal" id="location-modal" role="dialog" aria-modal="true" aria-label="Location map">
+    <div class="location-panel">
+      <div class="location-panel-header">
+        <div><div class="modal-title">Location</div><p id="location-status">Requesting your device location...</p></div>
+        <button class="icon-close" onclick="closeLocationMap()" aria-label="Close location map" title="Close">×</button>
+      </div>
+      <div id="location-map" aria-label="Map showing shared locations"></div>
+      <p class="location-note">Your location is shared only after you open this map. Friend markers require the Python location service.</p>
+    </div>
+  </div>
   <!-- SUCCESS ALERT BANNER -->
   <div class="success-alert" id="success-alert">
     <span class="success-alert-icon">✓</span>
@@ -270,7 +294,9 @@
   </div>
   <div class="toast" id="toast"></div>
 
-  <script type="module" src="static/js/app.js?v=20260404"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="module" src="static/js/app.js?v=20260930"></script>
 </body>
 
 </html>

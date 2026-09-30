@@ -731,6 +731,17 @@ body {
   color: white;
 }
 
+.counter-btn.sound {
+  width: 40px;
+  height: 40px;
+  align-self: center;
+  background: var(--blue-light);
+  color: var(--blue-dark);
+  font-size: 17px;
+}
+
+.counter-btn.sound.is-muted { filter: grayscale(1); opacity: 0.65; }
+
 .counter-btn.minus {
   background: var(--red-light);
   color: var(--red);
@@ -1411,6 +1422,70 @@ body {
   opacity: 1;
 }
 
+/* ── ANIMATION: opening line sequence ─────────────────────────────── */
+.app-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-content: center;
+  gap: 16px;
+  background: var(--bg);
+  transition: opacity 0.36s ease, visibility 0.36s ease;
+}
+
+.app-intro.is-finished { opacity: 0; visibility: hidden; pointer-events: none; }
+.intro-mark { font-size: 34px; text-align: center; animation: introMark 0.8s cubic-bezier(.2,.8,.2,1) both; }
+.intro-lines { display: flex; width: min(180px, 56vw); height: 3px; gap: 5px; }
+.intro-lines span { flex: 1; border-radius: 9px; background: var(--red); transform-origin: left; animation: introLine 0.8s cubic-bezier(.2,.8,.2,1) both; }
+.intro-lines span:nth-child(2) { animation-delay: 0.09s; background: var(--blue); }
+.intro-lines span:nth-child(3) { animation-delay: 0.18s; background: var(--green); }
+
+@keyframes introMark { from { opacity: 0; transform: translateY(7px) scale(.85); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes introLine { from { transform: scaleX(0); opacity: .2; } to { transform: scaleX(1); opacity: 1; } }
+
+/* ── ANIMATION: responsive count and log feedback ───────────────────── */
+.counter-num.count-ripple { animation: countRipple 0.42s cubic-bezier(.2,.9,.25,1); }
+@keyframes countRipple { 0% { transform: scale(.86); filter: brightness(1); } 58% { transform: scale(1.12); filter: brightness(1.15); } 100% { transform: scale(1); filter: brightness(1); } }
+
+.log-particle {
+  position: fixed;
+  z-index: 250;
+  pointer-events: none;
+  font-size: 18px;
+  animation: logParticle 0.7s cubic-bezier(.15,.8,.25,1) forwards;
+}
+@keyframes logParticle { from { opacity: 0; transform: translate(-50%, 0) scale(.7) rotate(-8deg); } 20% { opacity: 1; } to { opacity: 0; transform: translate(var(--drift), -76px) scale(1.05) rotate(10deg); } }
+
+/* ── LOCATION MAP ─────────────────────────────────────────────────── */
+.location-launch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  margin: 0 0 16px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.location-launch:hover { border-color: var(--blue); color: var(--blue-dark); }
+.location-modal { display: none; position: fixed; inset: 0; z-index: 300; padding: 20px; background: rgba(0,0,0,.48); align-items: center; justify-content: center; }
+.location-modal.open { display: flex; }
+.location-panel { width: min(760px, 100%); background: var(--white); border-radius: 8px; overflow: hidden; box-shadow: 0 22px 72px rgba(0,0,0,.32); }
+.location-panel-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding: 18px 20px 13px; }
+.location-panel-header p, .location-note { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.icon-close { width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--bg); color: var(--text); font-size: 25px; line-height: 1; cursor: pointer; }
+#location-map { width: 100%; height: min(58vh, 440px); background: var(--bg); }
+.location-note { padding: 12px 20px 16px; margin: 0; }
+.map-avatar { width: 36px; height: 36px; border: 2px solid white; border-radius: 50%; background: var(--red); color: white; display: grid; place-items: center; overflow: hidden; font-weight: 900; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.map-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
 /* ── SUCCESS ALERT BANNER ─────────────────────────────────────────── */
 .success-alert {
   position: fixed;
@@ -1764,6 +1839,15 @@ body {
   .toast {
     bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 12px);
   }
+
+  .counter-btn.sound { width: 38px; height: 38px; }
+  .location-modal { padding: 0; align-items: flex-end; }
+  .location-panel { border-radius: 12px 12px 0 0; }
+  #location-map { height: min(58vh, 410px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
 }
 
 /* ── SMALL MOBILE (≤420px) ────────────────────────────────────────── */
